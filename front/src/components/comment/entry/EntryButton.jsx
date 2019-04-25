@@ -22,7 +22,7 @@ class CommentButton extends React.Component {
     switch (iconName) {
       case 'face':
         renderIcon = <TagFaces className={classNames(classes.emojiIcon, classes.icon)} />
-        break;
+        break
       case 'attachment':
         renderIcon = <Attachment className={classNames(classes.icon, classes.attachmentIcon)} />
         break
@@ -30,11 +30,11 @@ class CommentButton extends React.Component {
         renderIcon = <AddPhotoAlternate className={classNames(classes.icon, classes.imageIcon)} />
         break
       default:
-        renderIcon = <span>o</span>
-        break;
+        renderIcon = <span>O</span>
+        break
     }
-    return (
 
+    return (
       <Fab size="small" className={classes.fab30} component="span">
         {tooltip ? (
           <Tooltip placement="top" title={tooltip}>

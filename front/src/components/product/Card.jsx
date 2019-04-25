@@ -14,7 +14,7 @@ import cardStyle from '../../static/style/product/card'
 import avatar from '../../static/img/avatar.png'
 import media from '../../static/img/media.jpg'
 import ActionPanel from '../button/ActionPanel'
-import UserPopup from './UserPopup'
+// import UserPopup from './UserPopup'
 
 
 class ProductCard extends React.Component {

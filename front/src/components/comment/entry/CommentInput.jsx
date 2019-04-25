@@ -3,7 +3,7 @@ import Paper from '@material-ui/core/Paper'
 // import InputBase from '@material-ui/core/InputBase'
 import { withStyles } from '@material-ui/core/styles'
 // import classNames from 'classnames'
-import CommentButton from './Button'
+import CommentButton from './EntryButton'
 import inputStyle from './inputStyle'
 import Grid from '@material-ui/core/Grid'
 
