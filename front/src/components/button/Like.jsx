@@ -1,20 +1,27 @@
 import React from 'react'
 import { withStyles } from '@material-ui/core/styles'
 import Tooltip from '@material-ui/core/Tooltip'
-import socialButtonStyle from '../../styles/button/social'
+import Zoom from '@material-ui/core/Zoom'
+import { socialButtonStyle } from '../../static/style/buttons'
 import Fab from '@material-ui/core/Fab'
 import Favorite from '@material-ui/icons/Favorite'
 import classNames from 'classnames'
 
 export default withStyles(socialButtonStyle)(
-  function Like(props) {
-    let { classes } = props
-    return (
-      <Tooltip placement="top" title="Like">
-        <Fab className={classes.fab34} color="secondary">
-          <Favorite className={classNames(classes.likeIcon, classes.icon)}/>
-        </Fab>
-      </Tooltip>
-    )
+  class Like extends React.Component {
+
+    render() {
+      let { classes } = this.props
+      let animateBool = this.props.animate
+      return (
+        <Zoom in={animateBool} style={{ transitionDelay: animateBool ? '350ms' : '0ms' }}>
+          <Fab className={classes.fab34} color="secondary">
+            <Tooltip placement="top" title="Like">
+              <Favorite className={classNames(classes.likeIcon, classes.icon)} />
+            </Tooltip>
+          </Fab>
+        </Zoom>
+      )
+    }
   }
 )

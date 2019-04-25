@@ -2,3 +2,5 @@ __pycache__
 migrations
 node_modules
 package-lock.json
+.vscode
+db.sqlite3

@@ -9,9 +9,9 @@ import CloseIcon from '@material-ui/icons/Close'
 import 'croppie/croppie.css'
 
 
-const styles = theme => ({
+const styles = () => ({
   button: {
-    margin: theme.spacing.unit,
+    margin: 8,
   },
   input: {
     display: 'none'
