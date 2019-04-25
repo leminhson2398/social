@@ -25,7 +25,7 @@ export default class Test extends React.Component {
         {({ data, loading, refetch }) => loading ? (
           <p>loading users...</p>
         ) : (
-            <UserList data={data} refetch={refetch}/>
+            <UserList data={data} refetch={refetch} />
           )}
       </Query>
     )
@@ -39,8 +39,8 @@ class UserList extends React.Component {
 
   render() {
     let { data, refetch } = this.props
-    let a = data.users.map((u, i) => (
-      <div key={i + 1}>
+    let a = data.users.map(u => (
+      <div key={u.id + 1}>
         <p>{u.username}</p>
         <p>{u.email}</p>
       </div>

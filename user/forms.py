@@ -7,8 +7,8 @@ from django.contrib.auth.models import User
 
 class SignupForm(UserCreationForm):
     """
-        This form is used for signup new use into system
-        extends from UserCreationForm
+    This form is used for signup new use into system
+    extends from UserCreationForm
     """
     class Meta:
         model = User

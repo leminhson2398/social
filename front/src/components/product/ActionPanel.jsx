@@ -1,29 +1,20 @@
 import React from 'react'
 import Paper from '@material-ui/core/Paper'
-// import Tooltip from '@material-ui/core/Tooltip'
 import { withStyles } from '@material-ui/core/styles'
-import Like from '../button/Like'
-import Comment from '../button/Comment'
-import ViewControl from '../button/ViewControl'
-import Dislike from '../button/Dislike'
-import Share from '../button/Share'
+import SocialButton from '../button/social/Social'
+import classNames from 'classnames'
 
 
-const styles = () => ({
-  paper: {
-    height: 40,
-    width: 40,
-    maxWidth: 250,
-    borderRadius: 20,
-    padding: 3,
+const panelStyle = () => ({
+  panel: {
+    height: 36,
+    width: 0,
     display: '-webkit-flex',
     display: 'flex',
-    justifyContent: 'space-between',
-    '-webkit-transition': 'width 250ms ease-out',
-    transition: 'width 500ms ease-out',
-    '&:hover': {
-      width: 250,
-    },
+    justifyContent: 'space-around',
+    maxWidth: 200,
+    borderRadius: 4,
+    padding: 3,
   },
 })
 
@@ -36,17 +27,17 @@ class ActionPanel extends React.Component {
     let { classes } = this.props
     return (
       <Paper
-        elevation={1} className={classes.paper}
-        // onMouseOver={() => console.log('over')}
+        elevation={1}
+        className={classNames(classes.panel)}
       >
-        <ViewControl/>
-        <Like />
-        <Dislike />
-        <Comment />
-        <Share />
+        <SocialButton tooltip="Facebook" social="facebook" size={30} />
+        <SocialButton tooltip="Twitter" social="twitter" size={30} />
+        <SocialButton tooltip="Pinterest" social="pinterest" size={30} />
+        <SocialButton tooltip="Embeded URL" social="embed" size={30} />
       </Paper>
     )
   }
 }
 
-export default withStyles(styles)(ActionPanel)
+
+export default withStyles(panelStyle)(ActionPanel)
