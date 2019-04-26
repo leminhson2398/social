@@ -10,8 +10,8 @@ import PropTypes from 'prop-types'
  * SocialButton doc
  * @param {string} tooltip - whether to render Tooltip.
  * @param {string} tooltipPlacement - where to place tooltip.
- * @param {string} social - decide which social image to render.
- * @param {string} size - which size to use e.g: fab30, fab36
+ * @param {string} socialName - decide which social image to render.
+ * @param {number} size - which size to use e.g: fab30, fab36
  */
 
 class SocialButton extends Component {
@@ -20,17 +20,16 @@ class SocialButton extends Component {
   }
 
   render() {
-    let { classes, tooltip, tooltipPlacement, social, size } = this.props
+    let { classes, tooltip, tooltipPlacement, socialName, size } = this.props
     let socialImg = (
       <img
-        src={require(`../../../static/img/${social.toLowerCase()}.png`)}
-        alt={social}
+        src={require(`../../../static/img/${socialName.toLowerCase()}.png`)}
+        alt={socialName}
       />
     )
-    size = classes['fab' + String(size)]
 
     return (
-      <Fab size="small" className={classNames(size, classes[social])}>
+      <Fab size="small" className={classNames(classes[`fab${String(size)}`], classes[socialName.toLowerCase()])}>
         {tooltip ? (
           <Tooltip placement={tooltipPlacement ? tooltipPlacement : 'top'} title={tooltip}>
             {socialImg}
@@ -46,7 +45,7 @@ class SocialButton extends Component {
 SocialButton.propTypes = {
   tooltip: PropTypes.string,
   tooltipPlacement: PropTypes.string,
-  social: PropTypes.string.isRequired,
+  socialName: PropTypes.string.isRequired,
   size: PropTypes.number.isRequired,
 }
 

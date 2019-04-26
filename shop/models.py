@@ -4,6 +4,8 @@ from django.contrib.auth import get_user_model
 import uuid
 from django.dispatch import receiver
 from django.db.models.signals import post_save
+# below is for elasticsearch
+from shop.search import ShopIndex
 
 
 class Category(models.Model):
@@ -73,6 +75,21 @@ class Shop(models.Model):
         super().save(**kwargs)
         return self.name
 
+    def indexing(self):
+        """
+        this method is for indexing every Shop objects exist in the database
+        """
+        obj = ShopIndex(
+            meta={'id': self.id},
+            owner=self.owner.username,
+            name=self.name,
+            slug=self.slug,
+            created=self.created,
+            slogan=self.slogan,
+        )
+        obj.save()
+        return obj.to_dict(include_meta=True)
+
 
 @receiver(post_save, sender=get_user_model())
 def create_shop(**kwargs):
@@ -111,7 +128,7 @@ class Product(models.Model):
     id          = models.UUIDField(primary_key=True, default=uuid.uuid4)
     title       = models.CharField(max_length=100, null=False, blank=False, db_index=True, unique=True)
     slug        = models.SlugField(max_length=100, null=False, blank=True, db_index=True)
-    description = models.TextField()
+    description = models.TextField(max_length=1000)
     shop        = models.ForeignKey(Shop, on_delete=models.CASCADE, related_name='products')
     # verified    = models.BooleanField(fedault=False)
     categories  = models.ManyToManyField(Category, related_name='products', symmetrical=False)

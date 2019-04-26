@@ -6,7 +6,7 @@ const buttonStyle = () => ({
     backgroundColor: '#ffffff',
     boxShadow: 'none !important',
     '&:hover': {
-      backgroundColor: '#E3E3E3',
+      backgroundColor: '#ffffff',
       boxShadow: 'none',
     },
   },

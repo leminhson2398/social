@@ -14,7 +14,12 @@ import ViewModule from '@material-ui/icons/ViewModule'
 
 /**
  * This component is used for performing some operations like like, comment, dislike
- *
+ * The iconName props must be exactly typed, otherwise, you won't be able to render desired output
+ * @param {string} tooltip - tooltip to render
+ * @param {string} tooltipPlacement - where to place tooltip, must be ['top', 'bottom', ...]
+ * @param {string} iconName - icon to render to screen, must be of ['like', 'dislike', 'comment', 'share', 'viewmore']
+ * @param {bool} border - whether to render '2px solid #ffffff' border to the screen
+ * @param {number} size - will be convert to `fab${String(size)}` in order to render
  */
 
 class ActionButton extends React.Component {
@@ -23,13 +28,14 @@ class ActionButton extends React.Component {
   }
 
   render() {
-    let { classes, tooltip, tooltipPlacement, iconName, border } = this.props
-    let borderClass = border ? classes.border : null
+    let { classes, tooltip, tooltipPlacement, iconName, border, size } = this.props
+    let borderClass = border ? classes.border : null// Whether to render border or not
     let iconToRender
 
     switch (iconName.toLowerCase()) {
       case 'like':
         iconToRender = <Favorite className={`${classes.likeIcon} ${classes.iconCommon}`} />
+        // iconToRender = React.createElement(eval('Favorite'), {className: `${classes.likeIcon} ${classes.iconCommon}`})
         break
       case 'dislike':
         iconToRender = <ThumbDown className={`${classes.dislikeIcon} ${classes.iconCommon}`} />
@@ -49,7 +55,9 @@ class ActionButton extends React.Component {
     }
 
     return (
-      <Fab className={classNames(classes.fab34, classes[iconName.toLowerCase()], borderClass)}>
+      <Fab
+        className={classNames(classes[`fab${String(size)}`], classes[iconName.toLowerCase()], borderClass)}
+      >
         {tooltip ? (
           <Tooltip
             placement={tooltipPlacement ? tooltipPlacement : "top"}
@@ -70,6 +78,7 @@ ActionButton.propTypes = {
   tooltipPlacement: PropTypes.string,
   iconName: PropTypes.string.isRequired,
   border: PropTypes.bool,
+  size: PropTypes.number,
 }
 
 export default withStyles(actionStyle)(ActionButton)

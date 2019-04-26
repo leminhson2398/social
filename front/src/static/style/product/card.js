@@ -17,9 +17,9 @@ var cardStyle = () => ({
     height: 32,
     border: '2px solid #ffffff',
   },
-  username: {
+  usernameUrl: {
     fontWeight: 'bold',
-    fontSize: 16,
+    fontSize: 18,
     textDecoration: 'none',
     color: '#5C5C5C',
     lineHeight: 'unset',
@@ -48,11 +48,19 @@ var cardStyle = () => ({
   cardAction: {
     padding: '4px 20px',
   },
-  popOver: {
-    pointerEvents: 'none',
+  cardTitle: {
+    fontFamily: "'Lobster', cursive",
+    color: '#696969',
+    letterSpacing: 0.75,
+    fontWeight: 500,
+    paddingLeft: 15,
+    lineHeight: '20px',
+    marginBottom: '0.8em'
   },
-  poPaper: {
-    padding: 8,
+  cardContent: {
+    fontSize: 14,
+    color: 'rgba(0, 0, 0, 0.87)',
+    fontWeight: 400,
   },
 })
 
