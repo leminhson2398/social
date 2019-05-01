@@ -38,7 +38,7 @@ class ProductDetail extends React.Component {
           onClose={this.closeDialog}
           scroll={this.state.scroll}
           aria-labelledby="product-detail-scroll-dialog"
-          maxWidth="lg"
+          maxWidth="md"
         >
           <DialogContent>
             <DialogContentText>

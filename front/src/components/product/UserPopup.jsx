@@ -1,47 +1,61 @@
 import React from 'react'
+import PropTypes from 'prop-types'
 import { withStyles } from '@material-ui/core/styles'
-// import Paper from '@material-ui/core/Paper'
-import Grid from '@material-ui/core/Grid'
-import avatar from '../../static/img/avatar.png'
-import Avatar from '@material-ui/core/Avatar'
-import { Typography } from '@material-ui/core';
+import Popper from '@material-ui/core/Popper'
+import Typography from '@material-ui/core/Typography'
+import Fade from '@material-ui/core/Fade'
+import Paper from '@material-ui/core/Paper'
+import Divider from '@material-ui/core/Divider'
 
-
-const popupStyle = () => ({
-  popup: {
-    flexGrow: 1,
+const styles = theme => ({
+  typography: {
+    padding: theme.spacing.unit * 2,
+  },
+  paper: {
     width: 230,
     height: 150,
-  },
-  avatar: {
-    width: 68,
-    height: 68,
-    border: '2px solid #AEAEAE',
+    borderRadius: 2,
+
   },
 })
 
-export default withStyles(popupStyle)(
-  class UserPopup extends React.Component {
-    constructor(props) {
-      super(props)
-    }
-
-    render() {
-      let { classes } = this.props
-      return (
-        <div className={classes.popup}>
-          <Grid container>
-            <Grid item xs={4} justify="center">
-              <Avatar alt="minh son" src={avatar} className={classes.avatar}/>
-            </Grid>
-            <Grid item xs={8}>
-              <Typography component="h4">
-                Le Minh Son
-              </Typography>
-            </Grid>
-          </Grid>
-        </div>
-      )
-    }
+class UserPopup extends React.Component {
+  constructor(props) {
+    super(props)
   }
-)
+
+  render() {
+    const { classes, anchorEl, open } = this.props
+
+    return (
+      <Popper
+        open={open}
+        anchorEl={anchorEl}
+        transition
+        placement="bottom"
+      >
+        {({ TransitionProps }) => (
+          <Fade {...TransitionProps} timeout={350}>
+            <Paper elevation={1}>
+              <div>
+
+              </div>
+              <Divider />
+              <div>
+                
+              </div>
+            </Paper>
+          </Fade>
+        )}
+      </Popper>
+    )
+  }
+}
+
+UserPopup.propTypes = {
+  classes: PropTypes.object.isRequired,
+  anchorEl: PropTypes.any.isRequired,
+  open: PropTypes.bool.isRequired,
+}
+
+export default withStyles(styles)(UserPopup)

@@ -3,14 +3,21 @@ import Fab from '@material-ui/core/Fab'
 import actionStyle from './style'
 import { withStyles } from '@material-ui/core/styles'
 import Tooltip from '@material-ui/core/Tooltip'
-import Favorite from '@material-ui/icons/Favorite'
 import classNames from 'classnames'
-import ThumbDown from '@material-ui/icons/ThumbDown'
+import PropTypes from 'prop-types'
+// import icons
+import ViewModule from '@material-ui/icons/ViewModule'
 import Share from '@material-ui/icons/Share'
 import Chat from '@material-ui/icons/Chat'
-import PropTypes from 'prop-types'
-import { Icon } from '@material-ui/core'
-import ViewModule from '@material-ui/icons/ViewModule'
+import Favorite from '@material-ui/icons/Favorite'
+import ThumbDown from '@material-ui/icons/ThumbDown'
+module.children = {
+  like: Favorite,
+  dislike: ThumbDown,
+  comment: Chat,
+  share: Share,
+  viewmore: ViewModule
+}
 
 /**
  * This component is used for performing some operations like like, comment, dislike
@@ -30,29 +37,9 @@ class ActionButton extends React.Component {
   render() {
     let { classes, tooltip, tooltipPlacement, iconName, border, size } = this.props
     let borderClass = border ? classes.border : null// Whether to render border or not
-    let iconToRender
+    let Icon_ = module.children[`${iconName.toLowerCase()}`]
+    let iconToRender = <Icon_ className={`${classes[`${iconName}Icon`]} ${iconName !== 'viewmore' ? classes.iconCommon : null}`} />
 
-    switch (iconName.toLowerCase()) {
-      case 'like':
-        iconToRender = <Favorite className={`${classes.likeIcon} ${classes.iconCommon}`} />
-        // iconToRender = React.createElement(eval('Favorite'), {className: `${classes.likeIcon} ${classes.iconCommon}`})
-        break
-      case 'dislike':
-        iconToRender = <ThumbDown className={`${classes.dislikeIcon} ${classes.iconCommon}`} />
-        break
-      case 'comment':
-        iconToRender = <Chat className={`${classes.commentIcon} ${classes.iconCommon}`} />
-        break
-      case 'share':
-        iconToRender = <Share className={`${classes.shareIcon} ${classes.iconCommon}`} />
-        break
-      case 'viewmore':
-        iconToRender = <ViewModule className={`${classes.viewmoreIcon}`} />
-        break
-      default:
-        iconToRender = <Icon>O</Icon>
-        break
-    }
 
     return (
       <Fab

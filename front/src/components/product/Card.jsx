@@ -5,50 +5,58 @@ import CardHeader from '@material-ui/core/CardHeader'
 import CardContent from '@material-ui/core/CardContent'
 import CardMedia from '@material-ui/core/CardMedia'
 import Typography from '@material-ui/core/Typography'
-// import CardActions from '@material-ui/core/CardActions'
-// import Divider from '@material-ui/core/Divider'
-// import Popover from '@material-ui/core/Popover'
 import classNames from 'classnames'
 import Avatar from '@material-ui/core/Avatar'
-import cardStyle from '../../static/style/product/card'
+// main card style jss
+import cardStyle from './cardStyle'
 import avatar from '../../static/img/shop-icon.png'
-import media from '../../static/img/shop-icon.png'
-// import ActionPanel from '../button/ActionPanel'
-// import UserPopup from './UserPopup'
+import media from '../../static/img/google.png'
+import ButtonIcon from '../button/icon/IconButton'
+import SocialSharePanel from './SocialSharePanel'
+import UserPopup from './UserPopup'
+// import icons
+import ShoppingCart from '@material-ui/icons/ShoppingCart'
+import BarChart from '@material-ui/icons/BarChart'
 
 
 class ProductCard extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
-      anchorEl: null
+      socialShareVisible: null,
+      openPopup: false,
     }
-  }
-
-  handlePopoverClose = () => {
-    this.setState({ anchorEl: null })
-  }
-
-  handlePopoverOpen = (event) => {
-    this.setState({ anchorEl: event.currentTarget })
+    this.userPopupRef = React.createRef()
   }
 
   render() {
     let { classes } = this.props
-    let { anchorEl } = this.state
+    let { socialShareVisible, openPopup } = this.state
+
     return (
       <Card className={classes.card}>
         <CardHeader
           avatar={
-            <span
-              className={classes.avatarOuter}
-            >
-              <Avatar
-                src={avatar}
-                className={classes.avatar}
-                alt={'hihi'}
-              ></Avatar>
-            </span>
+            <React.Fragment>
+              <span
+                className={classes.avatarOuter}
+                // reference for <UserPopup />
+                ref={this.userPopupRef}
+                aria-describedby='popup'
+                onClick={() => this.setState({ openPopup: !openPopup })}
+              >
+                <Avatar
+                  src={avatar}
+                  className={classes.avatar}
+                  alt={'hihi'}
+                ></Avatar>
+              </span>
+              {/* for user info popup */}
+              <UserPopup
+                anchorEl={this.userPopupRef}
+                open={openPopup}
+              />
+            </React.Fragment>
           }
           title={
             <Typography component="span" style={{ lineHeight: 'unset' }}>
@@ -62,21 +70,48 @@ class ProductCard extends React.Component {
           }
         />
         <CardMedia
-          className={classes.media}
+          className={classes.cardMedia}
           image={media}
-          title="product image"
           onMouseOver={() => console.log('over')}
         >
           <div
             aria-label="Media Meta"
-            className={classNames(classes.mediaMeta, { active: false })}
+            className={classNames(classes.mediaMetaDimmer)}
           >
-            hihih
+            <div className={classes.cardMediaAction}>
+              <ButtonIcon iconName="visibility" tooltip="View Detail" />
+              <ButtonIcon iconName="bookmark" tooltip="Save" />
+              <span
+                style={{ position: 'relative' }}
+                onClick={(event) => this.setState({ socialShareVisible: !socialShareVisible })}>
+                <ButtonIcon iconName="share" tooltip="Quick Share" />
+                <SocialSharePanel
+                  // customStyle will override default style already applied
+                  customStyle={{
+                    position: 'absolute',
+                    top: '50%', transform: 'translate(-105%, -50%)',
+                    visibility: socialShareVisible ? 'visible' : 'hidden',
+                  }}
+                />
+              </span>
+            </div>
+            <div className={classes.cardMediaInfo}>
+              <div
+                style={{ alignItems: 'center', display: 'inline-flex', marginRight: '20px' }}
+              >
+                <span><BarChart fontSize="small" /></span>
+                <span>1.5k</span>
+              </div>
+              <div style={{ alignItems: 'center', display: 'inline-flex', marginRight: '20px' }}>
+                <span><ShoppingCart fontSize="small" /></span>
+                <span>4.0/5</span>
+              </div>
+            </div>
           </div>
         </CardMedia>
         <CardContent>
           <Typography component="h5" variant="h6" className={classes.cardTitle}>
-            This will be the product name This will be the product name 
+            This will be the product name This will be the product name
           </Typography>
           <Typography component="p">
             This is just a text for description purpose and don't wanna be a bit silly 😅 about some thing idiot and don't know

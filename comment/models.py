@@ -7,10 +7,10 @@ class ProductComment(models.Model):
 	"""
 	related_name on owner field here means product comment
 	"""
-	owner 	= models.ForeignKey(User, on_delete=models.DO_NOTHING, related_name='p_comments')
+	owner 	= models.ForeignKey(User, on_delete=models.CASCADE, related_name='p_comments')
 	text 	= models.TextField(required=True, db_index=True, blank=False, null=False)
 	image 	= models.ImageField(upload_to='commentImages/%Y/%m/%d', null=True, blank=True)
-	file 	= models.FieldField(upload_to='commentFiles/%Y/%m/%d', null=True, blank=True)
+	file 	= models.FileField(upload_to='commentFiles/%Y/%m/%d', null=True, blank=True)
 	created = models.DateTimeField(auto_now_add=True)
 	updated = models.DateTimeField(auto_now=True)
 
@@ -34,5 +34,5 @@ class UserPostComment(models.Model):
 	"""
 	related_name on owner field here means comments on an user's post
 	"""
-	owner = models.ForeignKey(User, on_delete=models.DO_NOTHING, related_name='up_comments')
+	owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='up_comments')
 	

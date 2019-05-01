@@ -128,7 +128,7 @@ class Product(models.Model):
     id          = models.UUIDField(primary_key=True, default=uuid.uuid4)
     title       = models.CharField(max_length=100, null=False, blank=False, db_index=True, unique=True)
     slug        = models.SlugField(max_length=100, null=False, blank=True, db_index=True)
-    description = models.TextField(max_length=1000)
+    description = models.TextField(max_length=1000, db_index=True)
     shop        = models.ForeignKey(Shop, on_delete=models.CASCADE, related_name='products')
     # verified    = models.BooleanField(fedault=False)
     categories  = models.ManyToManyField(Category, related_name='products', symmetrical=False)
@@ -146,6 +146,7 @@ class Product(models.Model):
         ordering            = ['-added']
         db_table            = 'product'
         verbose_name_plural = 'Products'
+        index_together = ('slug', 'title', 'description')
 
     def __str__(self):
         if len(str(self.title)) > 20:

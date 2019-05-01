@@ -9,6 +9,10 @@ import AddPhotoAlternate from '@material-ui/icons/AddPhotoAlternate'
 import Attachment from '@material-ui/icons/Attachment'
 import PropTypes from 'prop-types'
 
+/**
+ * this file is used for comment entry
+ * three buttons for uploading file, adding emoji, adding photos
+ */
 
 class CommentButton extends React.Component {
   constructor(props) {
