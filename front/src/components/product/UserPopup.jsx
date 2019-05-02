@@ -6,18 +6,11 @@ import Typography from '@material-ui/core/Typography'
 import Fade from '@material-ui/core/Fade'
 import Paper from '@material-ui/core/Paper'
 import Divider from '@material-ui/core/Divider'
+import popupStyle from './popupStyle'
+import Grid from '@material-ui/core/Grid'
+import Avatar from '@material-ui/core/Avatar'
+import avatar from '../../static/img/shop-icon.png'
 
-const styles = theme => ({
-  typography: {
-    padding: theme.spacing.unit * 2,
-  },
-  paper: {
-    width: 230,
-    height: 150,
-    borderRadius: 2,
-
-  },
-})
 
 class UserPopup extends React.Component {
   constructor(props) {
@@ -33,16 +26,22 @@ class UserPopup extends React.Component {
         anchorEl={anchorEl}
         transition
         placement="bottom"
+        id="popup"
       >
         {({ TransitionProps }) => (
           <Fade {...TransitionProps} timeout={350}>
-            <Paper elevation={1}>
-              <div>
+            <Paper elevation={1} className={classes.paper}>
+              <Grid container spacing={16} justify="center" alignItems="center">
+                <Grid item>
+                  <Avatar alt="hihi" src={avatar} className={classes.avatar}/>
+                </Grid>
+                <Grid item>
 
-              </div>
+                </Grid>
+              </Grid>
               <Divider />
               <div>
-                
+
               </div>
             </Paper>
           </Fade>
@@ -58,4 +57,4 @@ UserPopup.propTypes = {
   open: PropTypes.bool.isRequired,
 }
 
-export default withStyles(styles)(UserPopup)
+export default withStyles(popupStyle)(UserPopup)

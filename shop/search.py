@@ -20,4 +20,4 @@ class ShopIndex(DocType):
 def bulk_indexing():
 	ShopIndex.init()
 	es = Elasticsearch()
-	bulk(client=es, actions=(b.indexing() for b in models.Shop.objects.all().iterator()))
+	bulk(client=es, actions=(instance.indexing() for instance in models.Shop.objects.all().iterator()))

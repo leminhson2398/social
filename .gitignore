@@ -5,3 +5,5 @@ package-lock.json
 .vscode
 db.sqlite3
 .vscode
+theme.json
+env

@@ -12,6 +12,10 @@ ReactDOM.render(
   <ApolloProvider client={client}>
     <Fragment>
       <CommentInput />
+      <CommentInput />
+      <CommentInput />
+      <CommentInput />
+
       <ProductCard />
       {/* <ProductDetail /> */}
     </Fragment>

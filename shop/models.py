@@ -32,7 +32,7 @@ class Category(models.Model):
     def save(self, **kwargs):
         self.name = str(self.name).lower().strip()
         if not self.slug:
-            self.slug = slugify(str(self.name))
+            self.slug = slugify(self.name)
         super().save(**kwargs)
         return self.name
 
@@ -66,9 +66,11 @@ class Shop(models.Model):
 
     def save(self, **kwargs):
         if not self.name:
-            self.name   = str(self.owner.username).lower().strip()
+            self.name = "{} Shop".format(
+                self.owner.username.strip().title()
+            )
         elif self.name:
-            self.name = str(self.name).lower().strip()
+            self.name = str(self.name).strip().title()
         self.slug   = slugify(self.name)
         if not self.email:
             self.email  = self.owner.email

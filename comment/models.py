@@ -1,13 +1,14 @@
 from django.db import models
 from django.contrib.auth.models import User
+from shop.models import Product
 
 
-# Create your models here.
 class ProductComment(models.Model):
 	"""
 	related_name on owner field here means product comment
 	"""
-	owner 	= models.ForeignKey(User, on_delete=models.CASCADE, related_name='p_comments')
+	owner 	= models.ForeignKey(User, on_delete=models.CASCADE, related_name='prpduct_comments')
+	product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='comments')
 	text 	= models.TextField(required=True, db_index=True, blank=False, null=False)
 	image 	= models.ImageField(upload_to='commentImages/%Y/%m/%d', null=True, blank=True)
 	file 	= models.FileField(upload_to='commentFiles/%Y/%m/%d', null=True, blank=True)

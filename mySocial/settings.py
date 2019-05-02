@@ -164,7 +164,6 @@ CORS_ORIGIN_WHITELIST = (
     'google.com',
     'localhost:8000',
     'localhost:8080',
-    '54915d77.ngrok.io',
 )
 
 # CELERY REDIS CONFIG
