@@ -1,7 +1,6 @@
 const inputStyle = () => ({
   paperInput: {
     width: 450,
-    maxHeight: 150,
     borderRadius: 20,
     display: 'flex',
     flexGrow: 1,
@@ -9,10 +8,10 @@ const inputStyle = () => ({
   },
   leftPaperInput: {
     display: 'inline-block',
-    borderRadius: 23,
+    maxHeight: 150,
     outline: 'none',
     overflowY: 'auto',
-    padding: 12,
+    overflowX: 'hidden',
     fontFamily: "'Roboto', sans-serif",
     verticalAlign: 'baseline',
     background: 'transparent',
@@ -47,6 +46,26 @@ const inputStyle = () => ({
     alignItems: 'flex-end',
     padding: 5,
   },
+  ItemUploadContainer: {
+    padding: 5,
+  },
+  imageSpan: {
+    height: 60,
+    margin: 5,
+    width: 'auto',
+    borderRadius: 4,
+    position: 'relative',
+    '&:hover': {
+      boxShadow: '0px 3px 5px -1px rgba(0,0,0,0.2), 0px 6px 10px 0px rgba(0,0,0,0.14), 0px 1px 18px 0px rgba(0,0,0,0.12)',
+    },
+  },
+  image: {
+    height: '100%',
+    width: 'auto',
+    borderRadius: 4,
+  },
+  
 })
+
 
 export default inputStyle

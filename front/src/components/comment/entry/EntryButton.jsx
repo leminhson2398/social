@@ -1,14 +1,17 @@
 import React from 'react'
 import { withStyles } from '@material-ui/core/styles'
-import classNames from 'classnames'
 import Fab from '@material-ui/core/Fab'
 import buttonStyle from './buttonStyle'
 import Tooltip from '@material-ui/core/Tooltip'
-import TagFaces from '@material-ui/icons/TagFaces'
-import AddPhotoAlternate from '@material-ui/icons/AddPhotoAlternate'
-import Attachment from '@material-ui/icons/Attachment'
 import PropTypes from 'prop-types'
-
+// import icons
+import {TagFaces, AddPhotoAlternate, Attachment, Close} from '@material-ui/icons'
+module.children = {
+  face: TagFaces,
+  attachment: Attachment,
+  addphoto: AddPhotoAlternate,
+  close: Close,
+}
 /**
  * this file is used for comment entry
  * three buttons for uploading file, adding emoji, adding photos
@@ -19,34 +22,30 @@ class CommentButton extends React.Component {
     super(props)
   }
 
+  componentWillUnmount() {
+    this.props = null
+  }
+
   render() {
-    let { classes, tooltip, iconName } = this.props
-    iconName = String(iconName).toLowerCase()
-    let renderIcon
-    switch (iconName) {
-      case 'face':
-        renderIcon = <TagFaces className={classNames(classes.emojiIcon, classes.icon)} />
-        break
-      case 'attachment':
-        renderIcon = <Attachment className={classNames(classes.icon, classes.attachmentIcon)} />
-        break
-      case 'addphoto':
-        renderIcon = <AddPhotoAlternate className={classNames(classes.icon, classes.imageIcon)} />
-        break
-      default:
-        renderIcon = <span>O</span>
-        break
-    }
+    let { classes, tooltip, iconName, size, style, onClick } = this.props
+    let Icon_ = module.children[`${iconName}`]
+    let renderIcon = <Icon_ className={`${classes.iconCommon} ${classes[iconName + 'Icon']}`} />
 
     return (
-      <Fab size="small" className={classes.fab30} component="span">
+      <Fab
+        size="small"
+        className={size ? classes[size] : classes.fab30}
+        component="span"
+        style={style ? style : null}
+        onClick={onClick}
+      >
         {tooltip ? (
           <Tooltip placement="top" title={tooltip}>
             {renderIcon}
           </Tooltip>
-        ) : (
-            renderIcon
-          )}
+        ) :
+          renderIcon
+        }
       </Fab>
     )
   }
@@ -55,6 +54,9 @@ class CommentButton extends React.Component {
 CommentButton.propTypes = {
   tooltip: PropTypes.string,
   iconName: PropTypes.string.isRequired,
+  size: PropTypes.string,
+  style: PropTypes.any,
+  onClick: PropTypes.func,
 }
 
 export default withStyles(buttonStyle)(CommentButton)

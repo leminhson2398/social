@@ -79,12 +79,12 @@ class ProductCard extends React.Component {
             className={classNames(classes.mediaMetaDimmer)}
           >
             <div className={classes.cardMediaAction}>
-              <ButtonIcon iconName="visibility" tooltip="View Detail" />
-              <ButtonIcon iconName="bookmark" tooltip="Save" />
+              <ButtonIcon iconName="visibility" tooltip="View Detail" btnType='rec30'/>
+              <ButtonIcon iconName="bookmark" tooltip="Save" btnType='rec30' />
               <span
                 style={{ position: 'relative' }}
                 onClick={(event) => this.setState({ socialShareVisible: !socialShareVisible })}>
-                <ButtonIcon iconName="share" tooltip="Quick Share" />
+                <ButtonIcon iconName="share" tooltip="Quick Share" btnType='rec30' />
                 <SocialSharePanel
                   // customStyle will override default style already applied
                   customStyle={{

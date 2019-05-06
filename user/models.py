@@ -56,20 +56,3 @@ def create_app_user(sender, **kwargs):
     """Using signal to create an app user, right after an user have signed up."""
     if kwargs.get('created', False):
         AppUser.objects.get_or_create(user=kwargs.get('instance'))
-
-
-class AvatarImage(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid4, db_index=True)
-    image = models.ImageField(upload_to='images/%Y/%m/%d', blank=True)
-    owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='images', null=False)
-    added = models.DateTimeField(auto_now_add=True)
-
-    def __str__(self):
-        return str(self.id)
-
-    @property
-    def get_absolute_url(self):
-        pass
-
-    class Meta:
-        ordering = ['-added']

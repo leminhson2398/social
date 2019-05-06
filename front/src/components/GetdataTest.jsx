@@ -47,7 +47,11 @@ class UserList extends React.Component {
     ))
     return (
       <div>
-        <button onClick={() => refetch()}>Refetch</button>
+        <button onClick={() => {
+          let d = new Date()
+          console.log(d.getSeconds())
+          refetch()
+        }}>Refetch</button>
         {a}
       </div>
     )

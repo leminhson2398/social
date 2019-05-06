@@ -10,7 +10,18 @@ const buttonStyle = () => ({
       boxShadow: 'none',
     },
   },
-  icon: {
+  fab20: {
+    width: 20,
+    height: 20,
+    minHeight: 'unset',
+    backgroundColor: '#ffffff',
+    boxShadow: 'none',
+    '&:hover': {
+      // backgroundColor: 'initial',
+      boxShadow: 'none',
+    },
+  },
+  iconCommon: {
     color: '#828282',
     '&:hover': {
       color: '#333333',
@@ -20,13 +31,17 @@ const buttonStyle = () => ({
     width: 24,
     height: 20,
   },
-  imageIcon: {
+  addphotoIcon: {
     width: 24,
     height: 20,
   },
-  emojiIcon: {
+  faceIcon: {
     width: 22,
     height: 22,
+  },
+  closeIcon: {
+    width: 14,
+    height: 14,
   },
 })
 

@@ -17,6 +17,29 @@ const iconButtonStyle = () => ({
       boxShadow: 'none',
     },
   },
+  fab30: {
+    width: 30,
+    height: 30,
+    minHeight: 'unset !important',
+    backgroundColor: '#ffffff',
+    borderRadius: '50%',
+    boxShadow: 'none',
+    '&:active': {
+      boxShadow: 'none',
+      backgroundColor: '#ffffff',
+    },
+  },
+  fab20: {
+    width: 20,
+    height: 20,
+    borderRadius: '50%',
+    minHeight: 'unset',
+    minWidth: 'unset',
+    backgroundColor: '#ffffff',
+    '&:hover': {
+      backgroundColor: '#ffffff',
+    },
+  },
   whiteBackground: {
     backgroundColor: '#F3F2F2',
   },
@@ -37,6 +60,10 @@ const iconButtonStyle = () => ({
   //   width: 20,
   //   height: 20,
   // },
+  closeIcon: {
+    width: 14,
+    height: 14,
+  },
 })
 
 export default iconButtonStyle

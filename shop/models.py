@@ -22,7 +22,7 @@ class Category(models.Model):
         index_together      = ['name', 'id']
 
     def __str__(self):
-        if len(str(self.name)) > 20:
+        if len(self.name) > 20:
             return str(self.name)[:20]
         return self.name
 
@@ -30,7 +30,7 @@ class Category(models.Model):
         pass
 
     def save(self, **kwargs):
-        self.name = str(self.name).lower().strip()
+        self.name = self.name.lower().strip()
         if not self.slug:
             self.slug = slugify(self.name)
         super().save(**kwargs)
@@ -57,7 +57,7 @@ class Shop(models.Model):
         index_together      = ['name', 'id']
 
     def __str__(self):
-        if len(str(self.name)) > 20:
+        if len(self.name) > 20:
             return str(self.name)[:20]
         return self.name
 
@@ -65,13 +65,10 @@ class Shop(models.Model):
         pass
 
     def save(self, **kwargs):
-        if not self.name:
-            self.name = "{} Shop".format(
-                self.owner.username.strip().title()
-            )
-        elif self.name:
-            self.name = str(self.name).strip().title()
-        self.slug   = slugify(self.name)
+        self.name = "{} Shop".format(self.owner.username.title()) \
+            if not self.name else self.name.strip().title()
+
+        self.slug = slugify(self.name)
         if not self.email:
             self.email  = self.owner.email
         super().save(**kwargs)
@@ -97,7 +94,7 @@ class Shop(models.Model):
 def create_shop(**kwargs):
     """Create a shop right after an user has signed up."""
     if kwargs.get('created', False):
-        Shop.objects.get_or_create(owner=kwargs.get('instance'))
+        Shop.objects.create(owner=kwargs.get('instance'))
 
 
 class ImportCountry(models.Model):
@@ -117,7 +114,7 @@ class ImportCountry(models.Model):
         return self.name
 
     def save(self, **kwargs):
-        self.name = str(self.name).lower().strip()
+        self.name = self.name.lower().strip()
         self.slug = slugify(self.name)
         super().save(**kwargs)
         return self.name
@@ -127,22 +124,22 @@ class ImportCountry(models.Model):
 
 
 class Product(models.Model):
-    id          = models.UUIDField(primary_key=True, default=uuid.uuid4)
-    title       = models.CharField(max_length=100, null=False, blank=False, db_index=True, unique=True)
-    slug        = models.SlugField(max_length=100, null=False, blank=True, db_index=True)
-    description = models.TextField(max_length=1000, db_index=True)
-    shop        = models.ForeignKey(Shop, on_delete=models.CASCADE, related_name='products')
-    # verified    = models.BooleanField(fedault=False)
-    categories  = models.ManyToManyField(Category, related_name='products', symmetrical=False)
-    added       = models.DateTimeField(auto_now_add=True)
-    updated     = models.DateTimeField(auto_now=True)
-    price       = models.DecimalField(max_digits=10, decimal_places=2, db_index=True)
-    on_sale     = models.DecimalField(max_digits=5, decimal_places=2)
-    available   = models.BooleanField(default=True)
-    stack       = models.PositiveSmallIntegerField(default=0)
-    views       = models.PositiveIntegerField(default=0)
-    hot         = models.BooleanField(default=False)
-    source      = models.ForeignKey(ImportCountry, on_delete=models.DO_NOTHING, related_name='products', null=True, blank=True)
+    id              = models.UUIDField(primary_key=True, default=uuid.uuid4)
+    title           = models.CharField(max_length=100, null=False, blank=False, db_index=True, unique=True)
+    slug            = models.SlugField(max_length=100, null=False, blank=True, db_index=True)
+    description     = models.TextField(max_length=1000, db_index=True)
+    shop            = models.ForeignKey(Shop, on_delete=models.CASCADE, related_name='products')
+    # verified      = models.BooleanField(default=False)
+    categories      = models.ManyToManyField(Category, related_name='products', symmetrical=False)
+    added           = models.DateTimeField(auto_now_add=True)
+    updated         = models.DateTimeField(auto_now=True)
+    price           = models.DecimalField(max_digits=10, decimal_places=2, db_index=True)
+    on_sale         = models.DecimalField(max_digits=5, decimal_places=2)
+    available       = models.BooleanField(default=True)
+    total_products  = models.PositiveSmallIntegerField(default=0)
+    views           = models.PositiveIntegerField(default=0)
+    hot             = models.BooleanField(default=False)
+    source          = models.ManyToManyField(ImportCountry, related_name='products', blank=True)
 
     class Meta:
         ordering            = ['-added']
@@ -159,11 +156,8 @@ class Product(models.Model):
         pass
 
     def save(self, **kwargs):
-        self.title = str(self.title).lower().strip()
+        self.title = self.title.strip().title()
         self.slug = slugify(self.title)
-        if self.stack == 0:
-            self.available = False
-        elif self.stack != 0:
-            self.available = True
+        self.available = True if self.total_products > 0 else False
         super().save(**kwargs)
         return self.title

@@ -14,5 +14,5 @@ app = Celery('mySocial', broker="redis://localhost:6379")
 
 app.config_from_object('django.conf:settings', namespace='CELERY')
 
-# load task modules from all
+# load task modules from all the installed apps
 app.autodiscover_tasks()
