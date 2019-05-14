@@ -4,6 +4,9 @@ const socialButtonStyle = () => ({
     height: 36,
     minHeight: 'unset !important',
     boxShadow: '0px 1px 1px rgba(0, 0, 0, 0.25)',
+    '&:active': {
+      boxShadow: 'none',
+    },
   },
   fab30: {
     width: 30,

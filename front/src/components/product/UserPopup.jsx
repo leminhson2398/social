@@ -18,7 +18,7 @@ class UserPopup extends React.Component {
   }
 
   render() {
-    const { classes, anchorEl, open } = this.props
+    const { classes, anchorEl, open, ...other } = this.props
 
     return (
       <Popper
@@ -26,7 +26,8 @@ class UserPopup extends React.Component {
         anchorEl={anchorEl}
         transition
         placement="bottom"
-        id="popup"
+        id="user-popup"
+        {...other}
       >
         {({ TransitionProps }) => (
           <Fade {...TransitionProps} timeout={350}>
@@ -53,7 +54,7 @@ class UserPopup extends React.Component {
 
 UserPopup.propTypes = {
   classes: PropTypes.object.isRequired,
-  anchorEl: PropTypes.any.isRequired,
+  anchorEl: PropTypes.any,
   open: PropTypes.bool.isRequired,
 }
 

@@ -51,11 +51,11 @@ var cardStyle = () => ({
     right: 0,
     top: 0,
     background: 'linear-gradient(0deg, rgba(0,0,0,0.5) 0%, rgba(0,0,0,0.04) 100%)',
-    opacity: 0,
-    '-webkit-transition': 'opacity 200ms linear',
-    '&:hover': {
-      opacity: 1,
-    },
+    // opacity: 0,
+    // '-webkit-transition': 'opacity 200ms linear',
+    // '&:hover': {
+    //   opacity: 1,
+    // },
   },
   cardMediaAction: {
     display: 'flex',

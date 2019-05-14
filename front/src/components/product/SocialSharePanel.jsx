@@ -17,6 +17,12 @@ const socialSharing = () => ({
     padding: 3,
   },
 })
+const socials = [
+  { tooltip: 'Facebook', socialName: 'facebook', size: 30 },
+  { tooltip: 'Twitter', socialName: 'twitter', size: 30 },
+  { tooltip: 'Pinterest', socialName: 'pinterest', size: 30 },
+  { tooltip: 'Embeded URL', socialName: 'embed', size: 30 },
+]
 
 class socialSharePanel extends React.Component {
   constructor(props) {
@@ -31,10 +37,9 @@ class socialSharePanel extends React.Component {
         elevation={1}
         className={classNames(classes.socialSharePanel)}
       >
-        <SocialButton tooltip="Facebook" socialName="facebook" size={30} />
-        <SocialButton tooltip="Twitter" socialName="twitter" size={30} />
-        <SocialButton tooltip="Pinterest" socialName="pinterest" size={30} />
-        <SocialButton tooltip="Embeded URL" socialName="embed" size={30} />
+        {socials.map((item, index) => 
+          <SocialButton key={index} tooltip={item.tooltip} socialName={item.socialName} size={item.size} />
+        )}
       </Paper>
     )
   }

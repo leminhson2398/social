@@ -5,12 +5,19 @@ import Button from '@material-ui/core/Button'
 import Fab from '@material-ui/core/Fab'
 import Tooltip from '@material-ui/core/Tooltip'
 import iconButtonStyle from './style'
-import { Visibility, BookmarkBorder, Share, Close } from '@material-ui/icons'
+import { Visibility, BookmarkBorder, Share, Close, TagFaces,
+  AddAPhoto, AttachFile
+} from '@material-ui/icons'
 module.children = {
+  rec: Button,
+  fab: Fab,
   share: Share,
   bookmark: BookmarkBorder,
   visibility: Visibility,
   close: Close,
+  face: TagFaces,
+  photo: AddAPhoto,
+  attachment: AttachFile,
 }
 
 /**
@@ -30,7 +37,7 @@ class ButtonIcon extends React.Component {
   }
 
   render() {
-    let { classes, iconName, tooltip, tooltipPlacemment, variant, btnType, style } = this.props
+    let { classes, iconName, tooltip, btnType, style, onClick, ...other } = this.props
     let Icon_ = module.children[iconName]
     let iconToRender = <Icon_ className={`${classes.iconCommon} ${classes[iconName + 'Icon']}`} />
     // 
@@ -38,12 +45,15 @@ class ButtonIcon extends React.Component {
 
     return (
       <ButtonOuter
-        variant={variant ? variant : "contained"}
+        // variant={variant ? variant : "contained"}
         className={classes[btnType]}
         style={style ? style : null}
+        onClick={onClick}
+        component="span"
+        {...other}
       >
         {tooltip ? (
-          <Tooltip title={tooltip} placement={tooltipPlacemment ? tooltipPlacemment : "top"}>
+          <Tooltip title={tooltip} placement="top">
             {iconToRender}
           </Tooltip>
         ) :
@@ -58,10 +68,10 @@ ButtonIcon.propsTypes = {
   classes: PropTypes.object,
   iconName: PropTypes.string.isRequired,
   tooltip: PropTypes.string,
-  tooltipPlacemment: PropTypes.string,
-  variant: PropTypes.string,
+  // variant: PropTypes.string,
   btnType: PropTypes.string.isRequired,
   style: PropTypes.any,
+  onClick: PropTypes.func,
 }
 
 export default withStyles(iconButtonStyle)(ButtonIcon)

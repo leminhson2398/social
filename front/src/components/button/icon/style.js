@@ -10,9 +10,9 @@ const iconButtonStyle = () => ({
     minWidth: 'unset',
     boxShadow: 'none',
     backgroundColor: '#ffffff',
-    // '&:hover': {
-    //   boxShadow: 'none',
-    // },
+    '&:hover': {
+      backgroundColor: '#ffffff',
+    },
     '&:active': {
       boxShadow: 'none',
     },
@@ -26,6 +26,9 @@ const iconButtonStyle = () => ({
     boxShadow: 'none',
     '&:active': {
       boxShadow: 'none',
+      backgroundColor: '#ffffff',
+    },
+    '&:hover': {
       backgroundColor: '#ffffff',
     },
   },
@@ -48,18 +51,6 @@ const iconButtonStyle = () => ({
     width: 20,
     height: 20,
   },
-  // visibilityIcon: {
-  //   width: 20,
-  //   height: 20,
-  // },
-  // bookmarkIcon: {
-  //   width: 20,
-  //   height: 20,
-  // },
-  // shareIcon: {
-  //   width: 20,
-  //   height: 20,
-  // },
   closeIcon: {
     width: 14,
     height: 14,

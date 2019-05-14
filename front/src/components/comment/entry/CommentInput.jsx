@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { Fragment } from 'react'
 import Paper from '@material-ui/core/Paper'
 import { withStyles } from '@material-ui/core/styles'
 import CommentButton from './EntryButton'
@@ -24,43 +24,47 @@ class CommentInput extends React.Component {
   }
 
   processImage = (event) => {
-    if (event.currentTarget.files && event.currentTarget.files[0]) {
-      let { fileReader } = this.classVars
-      let { userUploadFile } = this.state
-      let inputFile = event.currentTarget.files[0]
-
-      // Check file type is actually 'image/*' or not
-      if (/^(image\/)/.test(inputFile.type)) {
-        if (fileReader === null) {
-          fileReader = new FileReader()
-        }
-
-        fileReader.onload = (event) => {
-          // check already uploaded files, to avoid file duplication
-          if (userUploadFile.length && userUploadFile.some(image => image.name === inputFile.name && image.size === inputFile.size)) {
-            console.log(Error(`File named: ${inputFile.name} does already exist.`))
-            return
+    let files = event.currentTarget.files
+    let { userUploadFile } = this.state
+    let imageAsyncProcessor = new Promise((resolve, reject) => {
+      // trible check file exist & file type is 'image/*' or not
+      if (files && files[0] && /^(image\/)/.test(files[0].type)) {
+        // check to prevent file duplication base on file size and file name
+        if (userUploadFile.length && userUploadFile.some(image => image.name === files[0].name && image.size === files[0].size)) {
+          reject(`File named ${files[0].name} does already exist.`)
+        } else {
+          let { fileReader } = this.classVars
+          // check fileReader is defined or not
+          if (fileReader === null || fileReader === 'undefined') {
+            fileReader = new FileReader()
           }
-          this.setState({
-            userUploadFile: userUploadFile.concat(
-              { name: inputFile.name, content: event.target.result, size: inputFile.size }
-            ),
-            openInputFile: true,
-          })
-        }
 
-        fileReader.readAsDataURL(inputFile)
+          fileReader.onload = (event) => {
+            resolve({ name: files[0].name, content: event.target.result, size: files[0].size })
+          }
+          try {
+            fileReader.readAsDataURL(files[0])
+          } catch (error) {
+            reject(`Error occured: ${error}`)
+          }
+        }
       } else {
-        console.log(Error(`Unexpected file type: ${inputFile.type}`))
+        reject(`Unexpected error`)
       }
-    }
+    })
+    imageAsyncProcessor.then(image => {
+      this.setState({
+        userUploadFile: userUploadFile.concat(image),
+        openInputFile: true,
+      })
+      console.log(this.state)
+    }).catch(error => console.error(error))
   }
 
-  removeAnImage = (index) => {
-    let remainImages = this.state.userUploadFile.filter((item, i) => i !== index)
+  removeAnImage = name => {
     this.setState({
-      userUploadFile: remainImages,
-      openInputFile: Boolean(remainImages.length)
+      userUploadFile: this.state.userUploadFile.filter(item => item.name !== name),
+      openInputFile: Boolean(this.state.userUploadFile.length > 1)
     })
   }
 
@@ -76,7 +80,7 @@ class CommentInput extends React.Component {
     return (
       <Paper className={classes.paperInput} elevation={1}>
         <Grid container>
-          <Grid item xs={10} container direction="column">
+          <Grid item sm={10} xs={12} container direction="column">
             <Grid item container style={{ padding: '12px' }}>
               <Grid
                 item xs={12}
@@ -88,7 +92,7 @@ class CommentInput extends React.Component {
             </Grid>
             {openInputFile ? (
               // check are there any file uploaded.
-              <React.Fragment>
+              <Fragment>
                 <Divider />
                 <Grid item className={classes.ItemUploadContainer} container>
                   {userUploadFile.map((item, index) => (
@@ -101,17 +105,18 @@ class CommentInput extends React.Component {
                           size='fab20'
                           iconName='close'
                           style={{ position: 'absolute', right: '-10px', top: '-10px' }}
-                          onClick={() => this.removeAnImage(index)}
+                          onClick={() => this.removeAnImage(item.name)}
+                          title={`Delete ${item.name}`}
                         />
                       ) : null}
                       <img alt={item.name} title={item.name} src={item.content} className={classes.image} />
                     </span>
                   ))}
                 </Grid>
-              </React.Fragment>
+              </Fragment>
             ) : null}
           </Grid>
-          <Grid item xs={2} className={classes.rightPaperInput}>
+          <Grid item xs={12} sm={2} className={classes.rightPaperInput}>
             {/* <CommentButton iconName="attachment" tooltip="Attach a file" /> */}
             <input
               accept="image/*"

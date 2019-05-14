@@ -1,11 +1,16 @@
-import React from 'react'
-import Test from './components/GetdataTest'
-
+import React, { Fragment } from 'react'
+// import Signing from './components/Auth/Sign'
+// import ProductCard from './components/product/Card'
+import AuthUser from './components/GetdataTest'
 
 export default class App extends React.Component {
   render() {
     return (
-      <Test />
+      <Fragment>
+        {/* <Signing /> */}
+        {/* <ProductCard /> */}
+        <AuthUser />
+      </Fragment>
     )
   }
 }

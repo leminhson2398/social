@@ -1,6 +1,6 @@
 const inputStyle = () => ({
   paperInput: {
-    width: 450,
+    maxWidth: 450,
     borderRadius: 20,
     display: 'flex',
     flexGrow: 1,
@@ -42,7 +42,7 @@ const inputStyle = () => ({
   rightPaperInput: {
     display: 'flex',
     borderRadius: 23,
-    justifyContent: 'space-around',
+    justifyContent: 'flex-end',
     alignItems: 'flex-end',
     padding: 5,
   },
@@ -55,16 +55,13 @@ const inputStyle = () => ({
     width: 'auto',
     borderRadius: 4,
     position: 'relative',
-    '&:hover': {
-      boxShadow: '0px 3px 5px -1px rgba(0,0,0,0.2), 0px 6px 10px 0px rgba(0,0,0,0.14), 0px 1px 18px 0px rgba(0,0,0,0.12)',
-    },
+    boxShadow: '0px 3px 5px -1px rgba(0,0,0,0.2), 0px 6px 10px 0px rgba(0,0,0,0.14), 0px 1px 18px 0px rgba(0,0,0,0.12)',
   },
   image: {
     height: '100%',
     width: 'auto',
     borderRadius: 4,
   },
-  
 })
 
 

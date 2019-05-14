@@ -27,7 +27,7 @@ class CommentButton extends React.Component {
   }
 
   render() {
-    let { classes, tooltip, iconName, size, style, onClick } = this.props
+    let { classes, tooltip, iconName, size, style, onClick, ...other } = this.props
     let Icon_ = module.children[`${iconName}`]
     let renderIcon = <Icon_ className={`${classes.iconCommon} ${classes[iconName + 'Icon']}`} />
 
@@ -38,6 +38,7 @@ class CommentButton extends React.Component {
         component="span"
         style={style ? style : null}
         onClick={onClick}
+        {...other}
       >
         {tooltip ? (
           <Tooltip placement="top" title={tooltip}>

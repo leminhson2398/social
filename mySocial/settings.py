@@ -30,6 +30,9 @@ ALLOWED_HOSTS = [
     '127.0.0.1',
 ]
 
+INTERNAL_IPS = [
+    '127.0.0.1',
+]
 
 # Application definition
 
@@ -47,7 +50,9 @@ INSTALLED_APPS = [
     'graphene_django',
     'shop.apps.ShopConfig',
     'user.apps.UserConfig',
-    # 'comment.apps.CommentConfig',
+    'comment.apps.CommentConfig',
+    # debug_toolbar
+    'debug_toolbar',
 ]
 
 MIDDLEWARE = [
@@ -59,6 +64,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    # debug toolbar
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
 ]
 
 ROOT_URLCONF = 'mySocial.urls'
