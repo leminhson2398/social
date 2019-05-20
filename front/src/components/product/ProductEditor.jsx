@@ -12,12 +12,15 @@ import IconButton from '@material-ui/core/IconButton'
 import FormHelperText from '@material-ui/core/FormHelperText'
 import DialogContent from '@material-ui/core/DialogContent'
 import ButtonIcon from '../button/icon/IconButton'
-import TextField from '@material-ui/core/TextField'
+import SvgIcon from '@material-ui/core/SvgIcon'
+// import Typography from '@material-ui/core/Typography'
+import InputBase from '@material-ui/core/InputBase'
 import { withStyles } from '@material-ui/core/styles'
 // import style:
 import editorStyle from './editor'
+// import loading from '../../static/img/loading.gif'
 // import icons
-import { Edit } from '@material-ui/icons'
+import { Edit, Menu, AttachMoney, Functions, Remove } from '@material-ui/icons'
 
 class ProductEditor extends React.Component {
   constructor(props) {
@@ -27,9 +30,10 @@ class ProductEditor extends React.Component {
     }
     this.state = {
       userUploadImages: [],
-      openImageInput: null,
       openFileInputField: null,
     }
+    this.imageFieldRef = React.createRef()
+    this.today = null
   }
 
   processImage = (event) => {
@@ -47,8 +51,11 @@ class ProductEditor extends React.Component {
           if (fileReader === null || fileReader === 'undefined') {
             fileReader = new FileReader()
           }
+
           fileReader.onload = (event) => {
-            resolve({ name: files[0].name, content: event.target.result, size: files[0].size })
+            setTimeout(() => {
+              resolve({ name: files[0].name, content: event.target.result, size: files[0].size })
+            }, 1000)
           }
           try {
             fileReader.readAsDataURL(files[0])
@@ -63,9 +70,7 @@ class ProductEditor extends React.Component {
     imageAsyncProcessor.then(image => {
       this.setState({
         userUploadImages: userUploadImages.concat(image),
-        openImageInput: true
       })
-      console.log(this.state)
     }).catch(error => console.error(error))
   }
 
@@ -76,7 +81,6 @@ class ProductEditor extends React.Component {
   }
 
   componentWillUnmount() {
-    this.setState({ userUploadImages: [], openImageInput: false })
     this.classVars.fileReader = null
   }
 
@@ -84,9 +88,14 @@ class ProductEditor extends React.Component {
     this.setState({ openFileInputField: Boolean(event.target.checked) })
   }
 
+  // edit button click and focus title input
+  focusTitleEdit = () => {
+    document.getElementById('product-title-input').focus()
+  }
+
   render() {
     let { classes } = this.props
-    let { userUploadImages, openImageInput } = this.state
+    let { userUploadImages } = this.state
     let date = new Date()
 
     return (
@@ -96,12 +105,12 @@ class ProductEditor extends React.Component {
       >
         <DialogTitle disableTypography={true}>
           <FormControl className={classes.formControl}>
-            <InputLabel htmlFor="component-simple">Product Title</InputLabel>
-            <Input id="component-simple"
+            <InputLabel htmlFor="product-title-input">Product Title</InputLabel>
+            <Input id="product-title-input"
               className={classes.productTitle}
               endAdornment={
                 <InputAdornment position="end">
-                  <IconButton aria-label='Edit product title'>
+                  <IconButton aria-label='Edit product title' color="primary" onClick={this.focusTitleEdit}>
                     <Edit />
                   </IconButton>
                 </InputAdornment>
@@ -111,7 +120,10 @@ class ProductEditor extends React.Component {
             <FormHelperText className={classes.timeStamp}>{date.toUTCString().split(' ').slice(0, 4).join(' ')}</FormHelperText>
           </FormControl>
         </DialogTitle>
-        <DialogContent style={{ paddingTop: '24px' }}>
+        <DialogContent style={{ paddingTop: '24px', }}>
+          <span aria-label="product-description-label" className={classes.producEditorLabels}>
+            DESCRIPTION
+          </span>
           <Paper elevation={0} className={classes.editArea}>
             <Grid container direction="column">
               <Fragment>
@@ -131,15 +143,18 @@ class ProductEditor extends React.Component {
           </Paper>
         </DialogContent>
         <DialogContent>
+          <span aria-label="product-description-label" className={classes.producEditorLabels}>
+            IMAGES
+          </span>
           <Paper elevation={0} className={classes.editArea}>
             <Grid container direction="column">
-              <Grid item container>
-                {openImageInput ? (
-                  <Fragment>
+              <Grid item>
+                {userUploadImages.length ? (
+                  <div style={{ display: 'flex', flexWrap: 'wrap', }} ref={this.imageFieldRef}>
                     {userUploadImages.map((image, index) => (
                       <ImageItem image={image} key={index} classes={classes} onClick={() => this.removeAnImage(image.name)} />
                     ))}
-                  </Fragment>
+                  </div>
                 ) : null}
               </Grid>
               <Grid item style={{ textAlign: 'right' }}>
@@ -167,6 +182,9 @@ class ProductEditor extends React.Component {
         </DialogContent>
         {this.state.openFileInputField ? (
           <DialogContent>
+            <span aria-label="product-description-label" className={classes.producEditorLabels}>
+              FILES
+            </span>
             <Paper elevation={0} className={classes.editArea}>
               <Grid container direction="column">
                 <Grid item>
@@ -180,55 +198,37 @@ class ProductEditor extends React.Component {
             </Paper>
           </DialogContent>
         ) : null}
-        <InputFields />
+        <DialogContent style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-around' }}>
+          <Paper elevation={0} className={classes.inputFields}>
+            <IconButton aria-label="Pice" color='primary'>
+              <AttachMoney />
+            </IconButton>
+            <InputBase placeholder='Price' type="number" />
+          </Paper>
+          <Paper elevation={0} className={classes.inputFields}>
+            <IconButton aria-label="Sale off" color='primary'>
+              <SvgIcon>
+                <path d="M18.5,3.5L3.5,18.5L5.5,20.5L20.5,5.5M7,4A3,3 0 0,0 4,7A3,3 0 0,0 7,10A3,3 0 0,0 10,7A3,3 0 0,0 7,4M17,14A3,3 0 0,0 14,17A3,3 0 0,0 17,20A3,3 0 0,0 20,17A3,3 0 0,0 17,14Z" />
+              </SvgIcon>
+            </IconButton>
+            <InputBase placeholder='Sale off' />
+          </Paper>
+          <Paper elevation={0} className={classes.inputFields}>
+            <IconButton aria-label="Total Product" color='primary'>
+              <SvgIcon>
+                <path d="M4,17V9H2V7H6V17H4M22,15C22,16.11 21.1,17 20,17H16V15H20V13H18V11H20V9H16V7H20A2,2 0 0,1 22,9V10.5A1.5,1.5 0 0,1 20.5,12A1.5,1.5 0 0,1 22,13.5V15M14,15V17H8V13C8,11.89 8.9,11 10,11H12V9H8V7H12A2,2 0 0,1 14,9V11C14,12.11 13.1,13 12,13H10V15H14Z" />
+              </SvgIcon>
+            </IconButton>
+            <InputBase placeholder='Total products' type='number' />
+          </Paper>
+          <Paper elevation={0} className={classes.inputFields}>
+            <IconButton aria-label="Menu" color='primary'>
+              <Menu />
+            </IconButton>
+            <InputBase placeholder='Price' />
+          </Paper>
+        </DialogContent>
       </Paper>
-    )
-  }
-}
-
-
-class InputFields extends React.Component {
-  constructor(props) {
-    super(props)
-    this.state = {
-      price: {value: null, error: null},
-      sale: {value: 0, error: null},
-      products: {value: 0, error: null},
-      
-    }
-  }
-
-  render() {
-    let { price, sale } = this.state
-
-    return (
-      <DialogContent style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-around' }}>
-        <TextField
-          label="Price"
-          margin="dense"
-          variant="filled"
-        />
-        <TextField
-          label="Sale Percent"
-          margin="dense"
-          variant="filled"
-          type="number"
-          defaultValue={sale}
-          InputProps={{
-            startAdornment: <InputAdornment position="start">%</InputAdornment>,
-          }}
-        />
-        <TextField
-          label="Total Products Left"
-          margin="dense"
-          variant="filled"
-        />
-        <TextField
-          label="Multiline Placeholder"
-          margin="dense"
-          variant="filled"
-        />
-      </DialogContent>
     )
   }
 }
@@ -252,11 +252,11 @@ class ImageItem extends React.Component {
       >
         {this.state.closeBtn ? (
           <ButtonIcon
-            iconName='close'
+            iconName='unpin'
             btnType='fab20'
             style={{ position: 'absolute', right: '-10px', top: '-10px', boxShadow: 'none' }}
             onClick={() => onClick()}
-            title={`delete ${image.name}`}
+            title={`Unpin: ${image.name} ?`}
           />
         ) : null}
         <img alt={image.name} title={image.name} src={image.content} className={classes.image} />

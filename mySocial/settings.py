@@ -28,6 +28,7 @@ DEBUG = True
 ALLOWED_HOSTS = [
     'localhost',
     '127.0.0.1',
+    '19fc2c02.ngrok.io',
 ]
 
 INTERNAL_IPS = [
@@ -45,12 +46,13 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     # added
-    'django_celery_beat',
-    'django_celery_results',
+    # 'django_celery_beat',
+    # 'django_celery_results',
     'graphene_django',
     'shop.apps.ShopConfig',
     'user.apps.UserConfig',
     'comment.apps.CommentConfig',
+    'image.apps.ImageConfig',
     # debug_toolbar
     'debug_toolbar',
 ]
@@ -168,15 +170,17 @@ AUTHENTICATION_BACKENDS = [
 # }
 
 CORS_ORIGIN_WHITELIST = (
-    'google.com',
     'localhost:8000',
     'localhost:8080',
 )
 
+# for sending email
+DEFAULT_FROM_EMAIL = 'admin@test.com'
+
 # CELERY REDIS CONFIG
 CELERY_BROKER_URL = 'redis://localhost:6379'
 CELERY_RESULT_BACKEND = 'redis://localhost:6379'
-CELERY_ACCEPT_CONTENT = ['application/json']
-CELERY_TASK_SERIALIZER = 'json'
-CELERY_RESULT_SERIALIZER = 'json'
-CELERY_TIMEZONE = TIME_ZONE
+# CELERY_ACCEPT_CONTENT = ['application/json']
+# CELERY_TASK_SERIALIZER = 'json'
+# CELERY_RESULT_SERIALIZER = 'json'
+# CELERY_TIMEZONE = TIME_ZONE

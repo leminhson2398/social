@@ -56,7 +56,7 @@ const customInputStyle = {
     color: successColor + " !important"
   },
   formControl: {
-    margin: "0 0 17px 0",
+    margin: "0 0 8px 0",
     paddingTop: "27px",
     position: "relative",
     "& svg,& .fab,& .far,& .fal,& .fas,& .material-icons": {

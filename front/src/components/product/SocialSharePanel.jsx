@@ -2,7 +2,6 @@ import React from 'react'
 import Paper from '@material-ui/core/Paper'
 import { withStyles } from '@material-ui/core/styles'
 import SocialButton from '../button/social/Social'
-import classNames from 'classnames'
 
 
 const socialSharing = () => ({
@@ -35,7 +34,7 @@ class socialSharePanel extends React.Component {
       <Paper
         style={customStyle ? customStyle : null}
         elevation={1}
-        className={classNames(classes.socialSharePanel)}
+        className={classes.socialSharePanel}
       >
         {socials.map((item, index) => 
           <SocialButton key={index} tooltip={item.tooltip} socialName={item.socialName} size={item.size} />

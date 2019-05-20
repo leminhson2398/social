@@ -5,9 +5,16 @@ import Button from '@material-ui/core/Button'
 import Fab from '@material-ui/core/Fab'
 import Tooltip from '@material-ui/core/Tooltip'
 import iconButtonStyle from './style'
-import { Visibility, BookmarkBorder, Share, Close, TagFaces,
-  AddAPhoto, AttachFile
+import SvgIcon from '@material-ui/core/SvgIcon'
+import {
+  Visibility, BookmarkBorder, Share, Close, TagFaces,
+  AddAPhoto, AttachFile, Edit
 } from '@material-ui/icons'
+const Unpin = () => (
+  <SvgIcon style={{ width: '12px', height: '15px', color: 'red', }}>
+    <path d="M2,5.27L3.28,4L20,20.72L18.73,22L12.8,16.07V22H11.2V16H6V14L8,12V11.27L2,5.27M16,12L18,14V16H17.82L8,6.18V4H7V2H17V4H16V12Z" />
+  </SvgIcon>
+)
 module.children = {
   rec: Button,
   fab: Fab,
@@ -18,6 +25,8 @@ module.children = {
   face: TagFaces,
   photo: AddAPhoto,
   attachment: AttachFile,
+  unpin: Unpin,
+  edit: Edit,
 }
 
 /**
@@ -40,12 +49,10 @@ class ButtonIcon extends React.Component {
     let { classes, iconName, tooltip, btnType, style, onClick, ...other } = this.props
     let Icon_ = module.children[iconName]
     let iconToRender = <Icon_ className={`${classes.iconCommon} ${classes[iconName + 'Icon']}`} />
-    // 
     let ButtonOuter = /^(fab)/.test(btnType) ? Fab : Button
 
     return (
       <ButtonOuter
-        // variant={variant ? variant : "contained"}
         className={classes[btnType]}
         style={style ? style : null}
         onClick={onClick}

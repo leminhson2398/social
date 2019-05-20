@@ -5,7 +5,6 @@ import CardHeader from '@material-ui/core/CardHeader'
 import CardContent from '@material-ui/core/CardContent'
 import CardMedia from '@material-ui/core/CardMedia'
 import Typography from '@material-ui/core/Typography'
-import classNames from 'classnames'
 import Avatar from '@material-ui/core/Avatar'
 import Fade from '@material-ui/core/Fade'
 // main card style jss
@@ -16,7 +15,7 @@ import ButtonIcon from '../button/icon/IconButton'
 import SocialSharePanel from './SocialSharePanel'
 import UserPopup from './UserPopup'
 // import icons
-import { ShoppingCart, BarChart } from '@material-ui/icons'
+import { ShoppingCart, BarChart, Public } from '@material-ui/icons'
 
 
 class ProductCard extends React.Component {
@@ -51,7 +50,8 @@ class ProductCard extends React.Component {
   }
 
   componentWillUnmount() {
-    this.popupTimeout = null
+    clearTimeout(this.popupTimeout)
+    this.popupTimeout=null
   }
 
   render() {
@@ -59,7 +59,7 @@ class ProductCard extends React.Component {
     let { socialShareVisible, openPopup, openMediaDimmer, anchorEl } = this.state
 
     return (
-      <Card className={classes.card}>
+      <Card className={classes.card} elevation={1}>
         <CardHeader
           avatar={
             <Fragment>
@@ -91,7 +91,7 @@ class ProductCard extends React.Component {
             </Typography>
           }
           subheader={
-            <span className={classes.subHeader}>16 mins</span>
+            <span className={classes.subHeader}>16 mins. <Public style={{ fontSize: '12px' }} /> near Hanoi</span>
           }
         />
         <CardMedia
@@ -103,7 +103,7 @@ class ProductCard extends React.Component {
           <Fade in={openMediaDimmer} timeout={500}>
             <div
               aria-label="Media Meta"
-              className={classNames(classes.mediaMetaDimmer)}
+              className={classes.mediaMetaDimmer}
             >
               <div className={classes.cardMediaAction}>
                 <ButtonIcon iconName="visibility" tooltip="View Detail" btnType='rec30' />

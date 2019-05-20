@@ -20,7 +20,6 @@ var cardStyle = () => ({
   usernameUrl: {
     fontWeight: 'bold',
     fontSize: 18,
-    textDecoration: 'none',
     color: '#5C5C5C',
     lineHeight: 'unset',
     fontFamily: '"Lobster", cursive',
@@ -28,7 +27,7 @@ var cardStyle = () => ({
   subHeader: {
     fontSize: 12,
     fontWeight: 100,
-    color: '#828282',
+    color: '#6b6565',
     lineHeight: 'unset',
   },
   cardMedia: {

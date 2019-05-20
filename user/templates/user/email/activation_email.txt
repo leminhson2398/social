@@ -1,0 +1,7 @@
+Hello {{ username }}!
+
+To confirm your registration, visit the following link:
+
+{{ protocol }}://{{ domain }}/user/activate/{{ uid }}/{{ token }}
+
+Welcome to Milano!

@@ -19,6 +19,9 @@ import { Visibility, VisibilityOff } from '@material-ui/icons'
 import authStyle from './authStyle'
 // redux example
 import { connect } from 'react-redux'
+// import mutationStore
+import { mutationStore } from '../../lib/mutation'
+import { Mutation } from 'react-apollo'
 // import validator
 import validator from 'validator'
 
@@ -53,7 +56,7 @@ class Signing extends React.Component {
   render() {
     let { root, tabs, btnStyle, labelStyle, forgotPassword } = this.props.classes
     let {
-      loginEmail, loginPassword, signupUsername, signupEmail, signupPassword, loginCheck,
+      loginUsername, loginPassword, signupUsername, signupEmail, signupPassword, loginCheck,
       signupPasswordConfirm, loginPasswordType, signupPasswordType, signupPasswordConfirmType,
       signupCheck,
     } = this.props.authState
@@ -92,14 +95,14 @@ class Signing extends React.Component {
                   // the component is login
                   <Fragment>
                     <CustomInput
-                      labelText="Email address*"
-                      id="login-email"
+                      labelText="Username*"
+                      id="login-username"
                       formControlProps={{
                         fullWidth: true
                       }}
                       inputProps={{
-                        type: "email",
-                        defaultValue: loginEmail,
+                        type: "text",
+                        defaultValue: loginUsername,
                         onChange: () => this.handleChange(event, 0),
                       }}
                       error={true}
@@ -134,15 +137,27 @@ class Signing extends React.Component {
                       }
                       label="Remember me!"
                     />
-                    <Fab
-                      variant="extended"
-                      aria-label="login"
-                      className={btnStyle}
-                    // onClick={this}
+                    <Mutation mutation={mutationStore('token_auth')}
+                      variables={{ username: loginUsername, password: loginPassword }}
+                      onCompleted={data => console.log(data)}
+                      onError={error => console.log(error)}
                     >
-                      Let's GO
-                    </Fab>
-                    <div style={{ textAlign: 'center', paddingTop: '20px', }}>
+                      {(tokenAuth) => (
+                        <Fragment>
+                          <Fab
+                            variant="extended"
+                            aria-label="login"
+                            className={btnStyle}
+                            onClick={tokenAuth}
+                          >
+                            Let's GO
+                          </Fab>
+                        </Fragment>
+                      )}
+                    </Mutation>
+                    <div style={{ justifyContent: 'center', paddingTop: '20px', display: 'flex' }}>
+                      <a href="" className={forgotPassword}>Forgot username?</a>
+                      <span>-</span>
                       <a href="" className={forgotPassword}>Forgot password?</a>
                     </div>
                   </Fragment>
@@ -150,7 +165,7 @@ class Signing extends React.Component {
                 {tabValue === 1 &&
                   <Fragment>
                     <CustomInput
-                      labelText="User name*"
+                      labelText="Username*"
                       id="signup-username"
                       formControlProps={{
                         fullWidth: true
@@ -219,9 +234,24 @@ class Signing extends React.Component {
                       }
                       label="i Agree with Terms and Policies"
                     />
-                    <Fab variant="extended" aria-label="signup" className={btnStyle}>
-                      Sign Me Up
-                    </Fab>
+                    <Mutation mutation={mutationStore('create_user')}
+                      // create new user mutation
+                      variables={{ email: signupEmail, username: signupUsername, password1: signupPassword, password2: signupPasswordConfirm }}
+                      onCompleted={data => console.log(data)}
+                      onError={error => console.log(error.errors)}
+                    >
+                      {(createUser) => (
+                        <Fragment>
+                          <Fab variant="extended"
+                            aria-label="signup"
+                            className={btnStyle}
+                            onClick={createUser}
+                          >
+                            Sign Me Up
+                          </Fab>
+                        </Fragment>
+                      )}
+                    </Mutation>
                   </Fragment>
                 }
               </div>

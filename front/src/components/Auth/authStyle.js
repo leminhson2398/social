@@ -17,6 +17,7 @@ const authStyle = theme => ({
   },
   labelStyle: {
     userSelect: 'none',
+    paddingTop: 10,
   },
   forgotPassword: {
     color: '#102ED0',

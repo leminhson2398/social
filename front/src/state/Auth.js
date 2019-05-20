@@ -1,5 +1,5 @@
-var authState = {
-  loginEmail: '',
+const authState = {
+  loginUsername: '',
   loginPassword: '',
   signupUsername: '',
   signupEmail: '',
@@ -15,34 +15,10 @@ var authState = {
 function reducer(state, action) {
   // action id is number
   let { authState } = state
-  // console.log('authstate', state)
-  // switch (action.id) {
-  //   case 0:
-  //     return Object.assign({}, state, { authState: Object.assign({}, authState, { 'loginEmail': action.value }) })
-  //   case 1:
-  //     return Object.assign({}, state, { authState: Object.assign({}, authState, { 'loginPassword': action.value }) })
-  //   case 2:
-  //     return Object.assign({}, state, { authState: Object.assign({}, authState, { 'signupUsername': action.value }) })
-  //   case 3:
-  //     return Object.assign({}, state, { authState: Object.assign({}, authState, { 'signupEmail': action.value }) })
-  //   case 4:
-  //     return Object.assign({}, state, { authState: Object.assign({}, authState, { 'signupPassword': action.value }) })
-  //   case 5:
-  //     return Object.assign({}, state, { authState: Object.assign({}, authState, { 'signupPasswordConfirm': action.value }) })
-  //   case 6:
-  //     return Object.assign({}, state, { authState: Object.assign({}, authState, { 'loginPasswordType': authState.loginPasswordType === 'password' ? 'text' : 'password' }) })
-  //   case 7:
-  //     return Object.assign({}, state, { authState: Object.assign({}, authState, { 'signupPasswordType': authState.signupPasswordType === 'password' ? 'text' : 'password' }) })
-  //   case 8:
-  //     return Object.assign({}, state, { authState: Object.assign({}, authState, { 'signupPasswordConfirmType': authState.signupPasswordConfirmType === 'password' ? 'text' : 'password' }) })
-  //   default:
-  //     return state
-  // }
-
   function renewAuthState(authState, id) {
     switch (id) {
       case 0:
-        return Object.assign({}, authState, { loginEmail: action.value })
+        return Object.assign({}, authState, { loginUsername: action.value })
       case 1:
         return Object.assign({}, authState, { loginPassword: action.value })
       case 2:

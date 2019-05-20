@@ -1,6 +1,8 @@
+import loading from '../../static/img/loading.gif'
+
 const editorStyle = theme => ({
   editor: {
-    backgroundColor: '#F5E8C4',
+    backgroundColor: '#f7f0de',
     maxWidth: 600,
     // boderRadius: 5,
   },
@@ -9,13 +11,13 @@ const editorStyle = theme => ({
     fontSize: 24,
     color: '#585858',
     maxWidth: 300,
-    // textShadow: '2px 2px 2px rgba(0, 0, 0, 0.25) !important',
   },
   timeStamp: {
     textAlign: 'right',
   },
   editArea: {
     padding: 10,
+    position: 'relative',
   },
   descriptionArea: {
     fontSize: 14,
@@ -27,13 +29,33 @@ const editorStyle = theme => ({
     // width: '100%',
     // maxWidth: 552,
   },
+  producEditorLabels: {
+    fontWeight: 'bold',
+    backgroundColor: '#ffffff',
+    borderRadius: 3,
+    padding: 4,
+    color: '#737373',
+    position: 'relative',
+    left: 4,
+    bottom: -2,
+    zIndex: 1,
+    boxShadow: '0 .125rem .25rem rgba(0,0,0,.075)',
+    fontSize: '0.75rem',
+    userSelect: 'none',
+  },
+  inputFields: {
+    padding: '2px 6px 2px 2px',
+    marginBottom: 10,
+  },
   imageSpan: {
-    height: 60,
+    height: 77,
     margin: 5,
     width: 'auto',
     borderRadius: 4,
     position: 'relative',
-    boxShadow: '0px 3px 5px -1px rgba(0,0,0,0.2), 0px 6px 10px 0px rgba(0,0,0,0.14), 0px 1px 18px 0px rgba(0,0,0,0.12)',    
+    cursor: 'pointer',
+    boxShadow: '0px 2px 4px rgba(0, 0, 0, 0.25)',
+    // overflow: 'hidden',
   },
   image: {
     height: '100%',

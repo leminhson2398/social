@@ -8,3 +8,4 @@ db.sqlite3
 theme.json
 env
 dump.rdb
+unixenv

@@ -5,7 +5,6 @@ from user.forms import SignupForm
 from django.core.validators import ValidationError
 from user.models import AppUser
 import json
-from user import tasks
 
 
 class UserType(DjangoObjectType):
@@ -17,8 +16,10 @@ class UserType(DjangoObjectType):
 class Query(graphene.AbstractType):
     me = graphene.Field(UserType)
     users = graphene.List(UserType)
+    user = graphene.List(UserType, search=graphene.String(required=False))
 
     def resolve_users(self, info):
+        # print(info.schema)
         return User.objects.all()
 
     def resolve_me(self, info):
@@ -27,9 +28,23 @@ class Query(graphene.AbstractType):
             raise Exception("You are not logged in.")
         return user
 
+    def resolve_user(self, info, **kwargs):
+        search = kwargs.get('search', '')
+        if search:
+            try:
+                users = User.objects.filter(username__icontains=search)
+            except User.DoesNotExist:
+                raise Exception(f"User with username='{search}' does not exist.")
+            else:
+                return users
+        else:
+            raise Exception("You must enter an username.")
+
 
 class CreateAppUser(graphene.Mutation):
-    user = graphene.Field(UserType)
+    ok      = graphene.Boolean(required=True)
+    user    = graphene.Field(UserType, required=False)
+    error   = graphene.String(required=False)
 
     class Arguments:
         username = graphene.String(required=True)
@@ -41,9 +56,10 @@ class CreateAppUser(graphene.Mutation):
         # utilize UserCreationForm() to create new user
         form = SignupForm(kwargs)
         if form.is_valid():
-            return CreateAppUser(user=form.save())
+            return CreateAppUser(ok=True, user=form.save(info))
         else:
-            raise Exception(json.dumps(form.errors))
+            # raise Exception(json.dumps(form.errors))
+            return CreateAppUser(ok=False, error=json.dumps(form.errors))
 
 
 # class CreateUserAvatar(graphene.Mutation):

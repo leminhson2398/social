@@ -2,10 +2,17 @@ import graphene
 import shop.schema
 import user.schema
 import comment.schema
+import image.schema
 import graphql_jwt
 
 
-class Query(user.schema.Query, shop.schema.Query, comment.schema.Query, graphene.ObjectType):
+class Query(
+    user.schema.Query,
+    shop.schema.Query,
+    comment.schema.Query,
+    image.schema.Query,
+    graphene.ObjectType
+):
     pass
 
 

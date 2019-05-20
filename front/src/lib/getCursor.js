@@ -22,6 +22,3 @@ function getCaretCharacterOffsetWithin(element) {
   return caretOffset;
 }
 
-function passwordValidator(password) {
-  
-}

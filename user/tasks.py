@@ -9,6 +9,28 @@ import base64
 from io import BytesIO
 from django.core.files.base import ContentFile
 import time
+from django.template.loader import render_to_string
+from django.core.mail import send_mail, mail_admins, BadHeaderError
+
+
+@task
+def send_registration_email(uid, context):
+    try:
+        user = User.objects.get(id=uid)
+    except User.DoesNotExist:
+        raise Exception("Couldn't find user with id='{}'".format(uid))
+    else:
+        context.update({
+            'username': user.username,
+            'uid': urlsafe_base64_encode(force_bytes(user.pk)),
+            'token': default_token_generator.make_token(user),
+        })
+        subject = render_to_string(
+            'user/email/activation_subject.txt', context=context)
+        email = render_to_string(
+            'user/email/activation_email.txt', context=context)
+
+        send_mail(subject, email, settings.DEFAULT_FROM_EMAIL, [user.email])
 
 
 @task

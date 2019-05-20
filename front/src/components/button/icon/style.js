@@ -40,7 +40,7 @@ const iconButtonStyle = () => ({
     minWidth: 'unset',
     backgroundColor: '#ffffff',
     '&:hover': {
-      backgroundColor: '#ffffff',
+      backgroundColor: '#f1f1f1',
     },
   },
   whiteBackground: {
@@ -48,12 +48,42 @@ const iconButtonStyle = () => ({
   },
   iconCommon: {
     color: '#696969',
-    width: 20,
-    height: 20,
+    // width: 20,
+    // height: 20,
   },
   closeIcon: {
     width: 14,
     height: 14,
+  },
+  unpinIcon: {
+    // 
+  },
+  attachmentIcon: {
+    width: 20,
+    height: 26,
+  },
+  photoIcon: {
+    width: 20,
+    height: 20,
+  },
+  faceIcon: {
+    width: 20,
+    height: 20,
+  },
+  bookmarkHover: {
+    '&:hover': {
+      boxShadow: 'inset 0 0 0 100px #0f73ee',
+    },
+  },
+  shareHover: {
+    '&:hover': {
+      boxShadow: 'inset 0 0 0 100px #869fb2',
+    },
+  },
+  visibilityHover: {
+    '&:hover': {
+      boxShadow: 'inset 0 0 0 100px #fb5252',
+    },
   },
 })
 
