@@ -8,7 +8,8 @@ import iconButtonStyle from './style'
 import SvgIcon from '@material-ui/core/SvgIcon'
 import {
   Visibility, BookmarkBorder, Share, Close, TagFaces,
-  AddAPhoto, AttachFile, Edit
+  AddAPhoto, AttachFile, Edit, CloudUpload, ImageSearch,
+  MoreHoriz,
 } from '@material-ui/icons'
 const Unpin = () => (
   <SvgIcon style={{ width: '12px', height: '15px', color: 'red', }}>
@@ -27,6 +28,9 @@ module.children = {
   attachment: AttachFile,
   unpin: Unpin,
   edit: Edit,
+  clupload: CloudUpload,
+  imgsearch: ImageSearch,
+  morehorriz: MoreHoriz,
 }
 
 /**
@@ -35,7 +39,6 @@ module.children = {
  * @param {string} iconName - This param must be exactly lowercase format, 
  * eg: 'share', 'chat', ...
  * @param {string} btnType - Must be like 'fab34', 'fab30' or 'rec30'
- * @param {object} style - Additional style object, apply to <Button />
  * 
  * NOTE: Before using any icon, you must input it at the top of this file
  */
@@ -46,15 +49,16 @@ class ButtonIcon extends React.Component {
   }
 
   render() {
-    let { classes, iconName, tooltip, btnType, style, onClick, ...other } = this.props
-    let Icon_ = module.children[iconName]
-    let iconToRender = <Icon_ className={`${classes.iconCommon} ${classes[iconName + 'Icon']}`} />
+    let { classes, iconName, tooltip, btnType, onClick, ...other } = this.props
+    let Icon_ = module.children[iconName.toLowerCase()]
+    let iconToRender = <Icon_
+                        className={classes[`size${btnType.slice(btnType.search(/\d/g))}Icon`]}
+                      />
     let ButtonOuter = /^(fab)/.test(btnType) ? Fab : Button
 
     return (
       <ButtonOuter
         className={classes[btnType]}
-        style={style ? style : null}
         onClick={onClick}
         component="span"
         {...other}
@@ -77,7 +81,6 @@ ButtonIcon.propsTypes = {
   tooltip: PropTypes.string,
   // variant: PropTypes.string,
   btnType: PropTypes.string.isRequired,
-  style: PropTypes.any,
   onClick: PropTypes.func,
 }
 

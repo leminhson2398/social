@@ -22,8 +22,7 @@ import { connect } from 'react-redux'
 // import mutationStore
 import { mutationStore } from '../../lib/mutation'
 import { Mutation } from 'react-apollo'
-// import validator
-import validator from 'validator'
+
 
 function authStateWrapper(state) {
   return {
@@ -61,7 +60,7 @@ class Signing extends React.Component {
       signupCheck,
     } = this.props.authState
     let { tabValue } = this.state
-    // console.log('render', this.props.authState)
+    console.log(this.props)
 
     return (
       <Paper elevation={1} className={root}>
@@ -143,22 +142,20 @@ class Signing extends React.Component {
                       onError={error => console.log(error)}
                     >
                       {(tokenAuth) => (
-                        <Fragment>
-                          <Fab
-                            variant="extended"
-                            aria-label="login"
-                            className={btnStyle}
-                            onClick={tokenAuth}
-                          >
-                            Let's GO
-                          </Fab>
-                        </Fragment>
+                        <Fab
+                          variant="extended"
+                          aria-label="login"
+                          className={btnStyle}
+                          onClick={tokenAuth}
+                        >
+                          Let's GO
+                        </Fab>
                       )}
                     </Mutation>
                     <div style={{ justifyContent: 'center', paddingTop: '20px', display: 'flex' }}>
-                      <a href="" className={forgotPassword}>Forgot username?</a>
+                      <a href="#" className={forgotPassword}>Forgot username?</a>
                       <span>-</span>
-                      <a href="" className={forgotPassword}>Forgot password?</a>
+                      <a href="#" className={forgotPassword}>Forgot password?</a>
                     </div>
                   </Fragment>
                 }
@@ -241,15 +238,13 @@ class Signing extends React.Component {
                       onError={error => console.log(error.errors)}
                     >
                       {(createUser) => (
-                        <Fragment>
-                          <Fab variant="extended"
-                            aria-label="signup"
-                            className={btnStyle}
-                            onClick={createUser}
-                          >
-                            Sign Me Up
-                          </Fab>
-                        </Fragment>
+                        <Fab variant="extended"
+                          aria-label="signup"
+                          className={btnStyle}
+                          onClick={createUser}
+                        >
+                          Sign Me Up
+                        </Fab>
                       )}
                     </Mutation>
                   </Fragment>

@@ -8,7 +8,7 @@ import Paper from '@material-ui/core/Paper'
 import Divider from '@material-ui/core/Divider'
 import Grid from '@material-ui/core/Grid'
 import Avatar from '@material-ui/core/Avatar'
-import avatar from '../../static/img/shop-icon.png'
+import avatar from '../../../static/img/shop-icon.png'
 import Button from '@material-ui/core/Button'
 import popupStyle from './popupStyle'
 // icons

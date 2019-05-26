@@ -1,24 +1,42 @@
 <!DOCTYPE html>
 <html lang="en-US">
+
 <head>
-	<link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
-	<link href="https://fonts.googleapis.com/css?family=Lobster" rel="stylesheet">
-	<title>App</title>
-	<style type="text/css">
-		* {
-			box-sizing: border-box !important;
-			font-family: 'Roboto', sans-serif;
-			-webkit-font-smoothing: antialiased;
-			-moz-osx-font-smoothing: grayscale;
-		}
-		#product-title-input {
-			/*this is for product title*/
-			text-shadow: 2px 2px 2px rgba(33, 33, 33, 0.25);
-		}
-	</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Lobster" rel="stylesheet">
+    <title>App</title>
+    <style type="text/css">
+        html, body {
+            padding: 0;
+            margin: 0;
+        }
+        label {
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+        * {
+            box-sizing: border-box;
+            /*option above can only be applied to some specific components.
+                e.g: TextField
+            */
+            font-family: 'Roboto', sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        #product-title-input {
+            /*this is for product title*/
+            text-shadow: 2px 2px 2px rgba(33, 33, 33, 0.25);
+        }
+    </style>
 </head>
+
 <body>
-	<div id="app"></div>
-	<script src="./bundle.js"></script>
+    <div id="app"></div>
+    <script src="./bundle.js"></script>
 </body>
+
 </html>

@@ -1,12 +1,12 @@
-const authStyle = theme => ({
+const authStyle = () => ({
   root: {
-    maxWidth: 650,
+    // maxWidth: 650,
     // background: '#F9F9F9',
     padding: '0 14px 0 14px',
   },
   tabs: {
-    margin: '0 auto 40px auto',
-    boxShadow: '0px 2px 2px rgba(0, 0, 0, 0.25)',
+    marginBottom: 40,
+    boxShadow: '0 0.25rem .25rem rgba(0,0,0,.075)',
     borderRadius: 5,
   },
   btnStyle: {

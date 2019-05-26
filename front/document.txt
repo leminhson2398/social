@@ -1,0 +1,4 @@
+I: REDUX CONFIGURATION.
+  1: Store
+    - import createStore in index.js file
+    - 

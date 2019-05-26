@@ -1,5 +1,5 @@
 {
-  "python.pythonPath": "c:\\Users\\lemin\\OneDrive\\Desktop\\Python\\social\\env\\Scripts\\python.exe",
+  "python.pythonPath": "env/bin/python",
   "python.formatting.provider": "autopep8",
   "git.ignoreLimitWarning": true
 }

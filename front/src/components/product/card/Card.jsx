@@ -9,9 +9,9 @@ import Avatar from '@material-ui/core/Avatar'
 import Fade from '@material-ui/core/Fade'
 // main card style jss
 import cardStyle from './cardStyle'
-import avatar from '../../static/img/shop-icon.png'
-import media from '../../static/img/shop-icon.png'
-import ButtonIcon from '../button/icon/IconButton'
+import avatar from '../../../static/img/shop-icon.png'
+import media from '../../../static/img/shop-icon.png'
+import ButtonIcon from '../../button/icon/IconButton'
 import SocialSharePanel from './SocialSharePanel'
 import UserPopup from './UserPopup'
 // import icons

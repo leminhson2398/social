@@ -46,45 +46,49 @@ const iconButtonStyle = () => ({
   whiteBackground: {
     backgroundColor: '#F3F2F2',
   },
-  iconCommon: {
+  // rec30Icon is for button size 30px, including fab and rec
+  size30Icon: {
     color: '#696969',
-    // width: 20,
-    // height: 20,
-  },
-  closeIcon: {
-    width: 14,
-    height: 14,
-  },
-  unpinIcon: {
-    // 
-  },
-  attachmentIcon: {
     width: 20,
-    height: 26,
   },
-  photoIcon: {
-    width: 20,
-    height: 20,
+  size20Icon: {
+    color: '#696969',
+    width: 16,
   },
-  faceIcon: {
-    width: 20,
-    height: 20,
-  },
-  bookmarkHover: {
-    '&:hover': {
-      boxShadow: 'inset 0 0 0 100px #0f73ee',
-    },
-  },
-  shareHover: {
-    '&:hover': {
-      boxShadow: 'inset 0 0 0 100px #869fb2',
-    },
-  },
-  visibilityHover: {
-    '&:hover': {
-      boxShadow: 'inset 0 0 0 100px #fb5252',
-    },
-  },
+  // closeIcon: {
+  //   width: 14,
+  //   height: 14,
+  // },
+  // unpinIcon: {
+  //   // 
+  // },
+  // attachmentIcon: {
+  //   width: 20,
+  //   height: 26,
+  // },
+  // photoIcon: {
+  //   width: 20,
+  //   height: 20,
+  // },
+  // faceIcon: {
+  //   width: 20,
+  //   height: 20,
+  // },
+  // bookmarkHover: {
+  //   '&:hover': {
+  //     boxShadow: 'inset 0 0 0 100px #0f73ee',
+  //   },
+  // },
+  // shareHover: {
+  //   '&:hover': {
+  //     boxShadow: 'inset 0 0 0 100px #869fb2',
+  //   },
+  // },
+  // visibilityHover: {
+  //   '&:hover': {
+  //     boxShadow: 'inset 0 0 0 100px #fb5252',
+  //   },
+  // },
 })
 
 export default iconButtonStyle

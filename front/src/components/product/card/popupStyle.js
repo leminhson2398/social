@@ -3,7 +3,7 @@ const popupStyle = theme => ({
     width: 230,
     // height: 150,
     borderRadius: 2,
-    padding: theme.spacing.unit,
+    padding: 8,
   },
   avatar: {
     width: 68,
