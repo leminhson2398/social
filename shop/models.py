@@ -127,7 +127,7 @@ class Product(models.Model):
     id              = models.UUIDField(primary_key=True, default=uuid.uuid4)
     title           = models.CharField(max_length=100, null=False, blank=False, db_index=True, unique=True)
     slug            = models.SlugField(max_length=100, null=False, blank=True, db_index=True)
-    description     = models.TextField(max_length=1000, db_index=True)
+    description     = models.TextField(db_index=True, null=False, max_length=3000, blank=False)
     shop            = models.ForeignKey(Shop, on_delete=models.CASCADE, related_name='products')
     # verified      = models.BooleanField(default=False)
     categories      = models.ManyToManyField(Category, related_name='products', symmetrical=False)

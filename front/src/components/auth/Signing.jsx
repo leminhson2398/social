@@ -232,7 +232,7 @@ function Signing() {
                     // create new user mutation
                     variables={{ email: signupEmail, username: signupUsername, password1: signupPassword, password2: signupPasswordConfirm }}
                     onCompleted={data => console.log(data)}
-                    onError={error => console.log(error.errors)}
+                    onError={error => console.log(error)}
                   >
                     {(createUser) => (
                       <Fab variant="extended"

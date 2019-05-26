@@ -42,6 +42,12 @@ function ProductEditor() {
   const [openUserUploadFileField, changeUserUploadFileFieldState] = useState(false)
   // category selector opening state
   const [openCategorySelector, toggleCategorySelector] = useState(false)
+  // file gallery state
+  const [openFileGallery, toggleFileGallery] = useState(false)
+
+  function toggleFileGallery_() {
+    toggleFileGallery(!openFileGallery)
+  }
 
   function focusProductTitle() {
     // focus product title input field
@@ -52,6 +58,8 @@ function ProductEditor() {
     // remove an image
     userUploadImagesManipulate(userUploadImages.filter(image => (image.name !== imgName && image.size !== imgSize)))
   }
+
+
 
   function handleCategorySelectorState(number) {
     //  0: open; 1: close
@@ -131,19 +139,19 @@ function ProductEditor() {
               ) : null}
             </Grid>
             <Grid item style={{ textAlign: 'right' }}>
-              <input type='file' accept="image/*" style={{ display: 'none' }} id="product-add-image" />
-              <label htmlFor="product-add-image">
-                <ButtonIcon iconName='photo' btnType='fab30' tooltip='Add photo' />
-              </label>
+              {/* <input type='file' accept="image/*" style={{ display: 'none' }} id="product-add-image" /> */}
+              {/* <label htmlFor="product-add-image"> */}
+                <ButtonIcon iconName='photo' btnType='fab30' tooltip='Add photo' onClick={toggleFileGallery_} />
+              {/* </label> */}
             </Grid>
           </Grid>
         </Paper>
       </DialogContent>
-
-      <DialogContent>
-        <Gallery />
-      </DialogContent>
-
+      <Collapse in={openFileGallery}>
+				<DialogContent>
+          <Gallery />
+        </DialogContent>
+      </Collapse>
       <DialogContent
         style={{ paddingBottom: 'unset' }}
       >

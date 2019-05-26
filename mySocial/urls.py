@@ -2,11 +2,11 @@ from django.contrib import admin
 from django.urls import path, include
 from django.views.decorators.csrf import csrf_exempt
 from django.http.response import JsonResponse
-# from graphene_file_upload.django import FileUploadGraphQLView
+from graphene_file_upload.django import FileUploadGraphQLView
 from django.shortcuts import redirect
 
 from django.conf import settings
-from user.views import CustomGraphqlView
+# from user.views import CustomGraphqlView
 
 
 def home(request):
@@ -22,5 +22,5 @@ urlpatterns = [
     path('user/', include('user.urls')),
     path('', home),
     path('admin/', admin.site.urls),
-    path('graphql/', csrf_exempt(CustomGraphqlView.as_view(graphiql=True))),
+    path('graphql/', csrf_exempt(FileUploadGraphQLView.as_view(graphiql=True))),
 ]
