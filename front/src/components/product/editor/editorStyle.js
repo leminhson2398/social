@@ -43,7 +43,7 @@ const editorStyle = () => ({
 		boxShadow: '0 .125rem .25rem rgba(0,0,0,.075)',
 	},
 	inputFields: {
-		padding: '2px 6px 2px 2px',
+		padding: 6,
 		marginBottom: 10,
 		position: 'relative',
 	},

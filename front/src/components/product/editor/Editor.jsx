@@ -16,11 +16,11 @@ import DialogContent from '@material-ui/core/DialogContent'
 import ButtonIcon from '../../button/icon/IconButton'
 import SvgIcon from '@material-ui/core/SvgIcon'
 import ClickAwayListener from '@material-ui/core/ClickAwayListener'
-import Gallery from '../../gallery/ImageGallery'
+import InputBase from '@material-ui/core/InputBase'
+import Gallery from '../../gallery/Gallery'
 // import Typography from '@material-ui/core/Typography'
 import getDate from '../../../lib/getDate'
 import CategorySelector from './CategorySelector'
-import InputBase from '@material-ui/core/InputBase'
 // import style:
 import editorStyle from './editorStyle'
 // import icons
@@ -36,17 +36,20 @@ function ProductEditor() {
 
   const classes = makeStyles(editorStyle)()
 
-  // initial images state
-  const [userUploadImages, userUploadImagesManipulate] = useState([])
-  // files box opening state
-  const [openUserUploadFileField, changeUserUploadFileFieldState] = useState(false)
-  // category selector opening state
-  const [openCategorySelector, toggleCategorySelector] = useState(false)
-  // file gallery state
-  const [openFileGallery, toggleFileGallery] = useState(false)
+  const [editorState, setState] = useState({
+    userUploadImages: [],
+    openUserUploadFileField: false,
+    openCategorySelector: false,
+    openFileGallery: false,
+  })
+  let { userUploadImages, openUserUploadFileField, openCategorySelector, openFileGallery } = editorState
 
   function toggleFileGallery_() {
-    toggleFileGallery(!openFileGallery)
+    // toggle file gallery
+    setState({
+      ...editorState,
+      openFileGallery: !openFileGallery,
+    })
   }
 
   function focusProductTitle() {
@@ -56,19 +59,18 @@ function ProductEditor() {
 
   function removeAnImage(imgName, imgSize) {
     // remove an image
-    userUploadImagesManipulate(userUploadImages.filter(image => (image.name !== imgName && image.size !== imgSize)))
-  }
-
-
-
-  function handleCategorySelectorState(number) {
-    //  0: open; 1: close
-    number === 0 ? toggleCategorySelector(false) : toggleCategorySelector(true)
+    setState({
+      ...editorState,
+      userUploadImages: userUploadImages.filter(image => (image.name !== imgName && image.size !== imgSize))
+    })
   }
 
   function handleCheckboxOpenFileInput() {
     // open file box for uploading new file
-    changeUserUploadFileFieldState(!openUserUploadFileField)
+    setState({
+      ...editorState,
+      openUserUploadFileField: !openUserUploadFileField,
+    })
   }
 
   return (
@@ -139,16 +141,13 @@ function ProductEditor() {
               ) : null}
             </Grid>
             <Grid item style={{ textAlign: 'right' }}>
-              {/* <input type='file' accept="image/*" style={{ display: 'none' }} id="product-add-image" /> */}
-              {/* <label htmlFor="product-add-image"> */}
-                <ButtonIcon iconName='photo' btnType='fab30' tooltip='Add photo' onClick={toggleFileGallery_} />
-              {/* </label> */}
+              <ButtonIcon iconName='photo' btnType='fab30' tooltip={openFileGallery ? 'Close file gallery' : 'Add Photo'} onClick={toggleFileGallery_} />
             </Grid>
           </Grid>
         </Paper>
       </DialogContent>
       <Collapse in={openFileGallery}>
-				<DialogContent>
+        <DialogContent>
           <Gallery />
         </DialogContent>
       </Collapse>
@@ -179,7 +178,7 @@ function ProductEditor() {
               </Grid>
               <Grid item style={{ justifyContent: 'flex-end', alignItems: 'center' }} container>
                 <span style={{ fontSize: '10px', color: '#979797', fontWeight: 'bold' }}>(2 Mb or below)</span>
-                <ButtonIcon iconName='attachment' btnType='fab30' tooltip='Attach some files' />
+                <ButtonIcon iconName='attachment' btnType='fab30' tooltip={openFileGallery ? 'Close file gallery' : 'Attach some files'} onClick={toggleFileGallery_} />
               </Grid>
             </Grid>
           </Paper>
@@ -188,32 +187,32 @@ function ProductEditor() {
 
       <DialogContent style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-around', overflow: 'visible' }}>
         <Paper elevation={0} className={classes.inputFields}>
-          <IconButton aria-label="Pice" color='primary'>
+          <IconButton aria-label="Pice" color='primary' size="small">
             <AttachMoney />
           </IconButton>
           <InputBase placeholder='Price' type="number" />
         </Paper>
         <Paper elevation={0} className={classes.inputFields}>
-          <IconButton aria-label="Sale off" color='primary'>
+          <IconButton aria-label="Sale off" color='primary' size="small">
             <SvgIcon>
               <path d="M18.5,3.5L3.5,18.5L5.5,20.5L20.5,5.5M7,4A3,3 0 0,0 4,7A3,3 0 0,0 7,10A3,3 0 0,0 10,7A3,3 0 0,0 7,4M17,14A3,3 0 0,0 14,17A3,3 0 0,0 17,20A3,3 0 0,0 20,17A3,3 0 0,0 17,14Z" />
             </SvgIcon>
           </IconButton>
           <InputBase placeholder='Sale off' />
         </Paper>
-        <ClickAwayListener onClickAway={() => handleCategorySelectorState(0)}>
+        <ClickAwayListener onClickAway={() => setState({ ...editorState, openCategorySelector: false })}>
           <Paper elevation={0} className={classes.inputFields}>
-            <IconButton aria-label="Menu" color='primary'>
+            <IconButton aria-label="Menu" color='primary' size="small">
               <Menu />
             </IconButton>
             <InputBase placeholder='Categories'
-              onFocus={() => handleCategorySelectorState(1)}
+              onFocus={() => setState({ ...editorState, openCategorySelector: true })}
             />
             <CategorySelector openOrNot={openCategorySelector} />
           </Paper>
         </ClickAwayListener>
         <Paper elevation={0} className={classes.inputFields}>
-          <IconButton aria-label="Total Product" color='primary'>
+          <IconButton aria-label="Total Product" color='primary' size="small">
             <SvgIcon>
               <path d="M4,17V9H2V7H6V17H4M22,15C22,16.11 21.1,17 20,17H16V15H20V13H18V11H20V9H16V7H20A2,2 0 0,1 22,9V10.5A1.5,1.5 0 0,1 20.5,12A1.5,1.5 0 0,1 22,13.5V15M14,15V17H8V13C8,11.89 8.9,11 10,11H12V9H8V7H12A2,2 0 0,1 14,9V11C14,12.11 13.1,13 12,13H10V15H14Z" />
             </SvgIcon>

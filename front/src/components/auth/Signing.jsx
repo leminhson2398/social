@@ -19,7 +19,7 @@ import { Visibility, VisibilityOff } from '@material-ui/icons'
 import authStyle from './authStyle'
 import { authState, reducer } from '../../state/auth'
 // apollo graphql
-import { mutationStore } from '../../lib/mutation'
+import { TOKEN_AUTH, VERIFY_TOKEN, SIGNUP_USER } from '../../lib/mutation'
 import { Mutation } from 'react-apollo'
 
 
@@ -34,12 +34,34 @@ function Signing() {
     {
       loginUsername, loginPassword, loginPasswordType, signupUsername,
       signupEmail, signupPassword, signupPasswordConfirm, signupPasswordType,
-      signupPasswordConfirmType, loginCheck, signupCheck
+      signupPasswordConfirmType, loginCheck, signupCheck,
+      // below is validations
+      loginUsernameValidation, loginPasswordValidation, signupUsernameValidation,
+      signupEmailValidation, signupPasswordValidation, signupPasswordConfirmValidation,
+      // NOTE that signupPasswordValidation is is an object: { validationComponent: React.Component, error: Boolean }
     }, dispatch
   ] = useReducer(reducer, authState)
 
   function switchTab(_, newValue) {
     setTabValue(newValue)
+  }
+
+  function checkForAuthenticationButtons(name) {
+    // name should be 'login' or 'signup'
+    if (name === 'signup') {
+      let canProceed = (
+        [signupUsernameValidation, signupEmailValidation, signupPasswordValidation.error, signupPasswordConfirmValidation].some(item => Boolean(item) === true) ||
+        signupCheck === false ||
+        [signupUsername, signupPassword, signupEmail, signupPasswordConfirm].some(item => item.length === 0)
+      ) ? true : false
+      return canProceed
+    } else {
+      let canProceed = (
+        [loginUsernameValidation, loginPasswordValidation].some(item => Boolean(item) === true) ||
+        [loginPassword, loginUsername].some(item => item.length === 0)
+      ) ? true : false
+      return canProceed
+    }
   }
 
   function handleChange(event, value) {
@@ -50,11 +72,6 @@ function Signing() {
 
   function changePwdType(_, value) {
     // this function is for changing password input type
-    dispatch({ type: value })
-  }
-
-  function handleCheckboxStatus(_, value) {
-    // this function is for checkbox status
     dispatch({ type: value })
   }
 
@@ -79,7 +96,7 @@ function Signing() {
             <Tab label="Sign up" />
           </Tabs>
           <div style={{ textAlign: 'center' }} >
-            <div style={{ display: 'flex', flexWrap: 'nowrap', width: '150px', justifyContent: 'space-around', margin: '0 auto 20px auto', }}>
+            <div className={classes.socialButtonArea}>
               <SocialButton tooltip="with Facebook" socialName="facebook" size={36} />
               <SocialButton tooltip="with Google" socialName="google" size={36} />
               <SocialButton tooltip="with Twitter" socialName="twitter" size={36} />
@@ -100,9 +117,11 @@ function Signing() {
                       defaultValue: loginUsername,
                       onBlur: () => handleChange(event, 0),
                     }}
-                    error={true}
+                    error={Boolean(loginUsernameValidation)}
                   />
-                  <FormHelperText error={true}>hihi</FormHelperText>
+                  {Boolean(loginUsernameValidation) ? (
+                    <FormHelperText error={true}>{loginUsernameValidation}</FormHelperText>
+                  ) : null}
                   <CustomInput
                     labelText="Password*"
                     id="login-password"
@@ -119,33 +138,46 @@ function Signing() {
                       defaultValue: loginPassword,
                       onBlur: () => handleChange(event, 1),
                     }}
+                    error={Boolean(loginPasswordValidation)}
                   />
+                  {Boolean(loginPasswordValidation) ? (
+                    <FormHelperText error={true}>{loginPasswordValidation}</FormHelperText>
+                  ) : null}
                   <FormControlLabel
                     className={classes.labelStyle}
                     control={
                       <Checkbox
                         value="remember-me"
                         color="primary"
-                        onChange={() => handleCheckboxStatus(event, 9)}
+                        onChange={() => dispatch({ type: 9 })}
                         checked={loginCheck}
                       />
                     }
                     label="Remember me!"
                   />
-                  <Mutation mutation={mutationStore('token_auth')}
+                  <Mutation mutation={TOKEN_AUTH}
                     variables={{ username: loginUsername, password: loginPassword }}
                     onCompleted={data => console.log(data)}
-                    onError={error => console.log(error)}
+                    onError={error => alert(error)}
                   >
                     {(tokenAuth) => (
                       <Fab
                         variant="extended"
                         aria-label="login"
                         className={classes.btnStyle}
-                        onClick={tokenAuth}
+                        onClick={() => {
+                          if (checkForAuthenticationButtons('login')) {
+                            console.error('something went wrong with login process')
+                          } else {
+                            tokenAuth()
+                          }
+                        }}
+                        disabled={// check fields value length or validation text
+                          checkForAuthenticationButtons('login')
+                        }
                       >
                         Let's GO
-                        </Fab>
+                      </Fab>
                     )}
                   </Mutation>
                   <div style={{ justifyContent: 'center', paddingTop: '20px', display: 'flex' }}>
@@ -169,7 +201,11 @@ function Signing() {
                       defaultValue: signupUsername,
                       onBlur: () => handleChange(event, 2),
                     }}
+                    error={Boolean(signupUsernameValidation)}
                   />
+                  {signupUsernameValidation ? (
+                    <FormHelperText error={true}>{signupUsernameValidation}</FormHelperText>
+                  ) : null}
                   <CustomInput
                     labelText="Email address*"
                     id="signup-email"
@@ -181,7 +217,11 @@ function Signing() {
                       defaultValue: signupEmail,
                       onBlur: () => handleChange(event, 3),
                     }}
+                    error={Boolean(signupEmailValidation)}
                   />
+                  {signupEmailValidation ? (
+                    <FormHelperText error={true}>{signupEmailValidation}</FormHelperText>
+                  ) : null}
                   <CustomInput
                     labelText="Password*"
                     id="signup-password1"
@@ -198,7 +238,10 @@ function Signing() {
                       defaultValue: signupPassword,
                       onBlur: () => handleChange(event, 4),
                     }}
+                    error={signupPasswordValidation.error}
                   />
+                  {/* check lib/authValidator */}
+                  <FormHelperText component='div'>{signupPasswordValidation.validationComponent}</FormHelperText>
                   <CustomInput
                     labelText="Confirm Password*"
                     id="signup-password2"
@@ -215,33 +258,46 @@ function Signing() {
                       defaultValue: signupPasswordConfirm,
                       onBlur: () => handleChange(event, 5),
                     }}
+                    error={Boolean(signupPasswordConfirmValidation)}
                   />
+                  {signupPasswordConfirmValidation ? (
+                    <FormHelperText error={true}>{signupPasswordConfirmValidation}</FormHelperText>
+                  ) : null}
                   <FormControlLabel
                     className={classes.labelStyle}
                     control={
                       <Checkbox
                         value="agree"
                         color="primary"
-                        onChange={() => changePwdType(event, 10)}
+                        onChange={() => dispatch({ type: 10 })}
                         checked={signupCheck}
                       />
                     }
                     label="i Agree with Terms and Policies"
                   />
-                  <Mutation mutation={mutationStore('create_user')}
+                  <Mutation mutation={SIGNUP_USER}
                     // create new user mutation
                     variables={{ email: signupEmail, username: signupUsername, password1: signupPassword, password2: signupPasswordConfirm }}
                     onCompleted={data => console.log(data)}
                     onError={error => console.log(error)}
                   >
-                    {(createUser) => (
+                    {(signupUser) => (
                       <Fab variant="extended"
                         aria-label="signup"
                         className={classes.btnStyle}
-                        onClick={createUser}
+                        onClick={() => {
+                          if (checkForAuthenticationButtons('signup')) {
+                            console.error('Something went wrong with signup process.')
+                          } else {
+                            signupUser()
+                          }
+                        }}
+                        disabled={// checking for errors and empty field
+                          checkForAuthenticationButtons('signup')
+                        }
                       >
                         Sign Me Up
-                        </Fab>
+                      </Fab>
                     )}
                   </Mutation>
                 </Fragment>

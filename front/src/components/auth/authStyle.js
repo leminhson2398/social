@@ -25,6 +25,13 @@ const authStyle = () => ({
     fontSize: 12,
     fontWeight: 'thin',
   },
+  socialButtonArea: {
+    display: 'flex',
+    flexWrap: 'nowrap',
+    width: 150,
+    justifyContent: 'space-around',
+    margin: '0 auto 20px auto',
+  },
 })
 
 export default authStyle

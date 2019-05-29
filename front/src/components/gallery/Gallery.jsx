@@ -15,7 +15,7 @@ function Gallery() {
     <Paper elevation={0}>
       <Paper className={classes.galleryHeader}>
         <div>
-          <span className={classes.galleryTitle}>Content Gallery</span>
+          <span className={classes.galleryTitle}>Media Gallery</span>
         </div>
         <div>
           <ButtonIcon btnType='fab30' tooltip='Upload New Image' iconName='clupload' style={{ marginLeft: '10px', }} />
@@ -26,7 +26,7 @@ function Gallery() {
       <div style={{ paddingBottom: '20px', }}>
         <div className={classes.galleryBody}>
           <span className={classes.imageSpan}>
-
+            <img  src="" alt="" />
           </span>
           <span className={classes.imageSpan}>
 

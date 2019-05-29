@@ -53,10 +53,11 @@ const galleryStyle = theme => ({
   imageSpan: {
     width: 100,
     height: 100,
-    borderRadius: 5,
+    borderRadius: 4,
     overflow: 'hidden',
     background: '#494949',
-    margin: 5,
+    margin: 4,
+    boxShadow: '0 0.25rem .25rem rgba(0,0,0,.075)',
   },
 })
 
