@@ -1,30 +1,25 @@
 import graphene
-from image.models import ProductImage, UserImage, ShopImage
+from image.models import ShopFile, UserFile
 from graphene_django import DjangoObjectType
 
 
-class ProductImageType(DjangoObjectType):
+class UserFileType(DjangoObjectType):
 	class Meta:
-		model = ProductImage
+		model = UserFile
 
 
-class UserImageType(DjangoObjectType):
+class ShopFileType(DjangoObjectType):
 	class Meta:
-		model = UserImage
-
-
-class ShopImageType(DjangoObjectType):
-	class Meta:
-		model = ShopImage
+		model = ShopFile
 
 
 class Query(graphene.ObjectType):
-	product_image = graphene.Field(ProductImageType)
-	product_images = graphene.List(ProductImageType, search=graphene.String(required=True))
-	user_image = graphene.Field(UserImageType)
-	user_images = graphene.List(UserImageType)
-	shop_image = graphene.Field(ShopImageType)
-	shop_images = graphene.List(ShopImageType)
+	# product_image = graphene.Field(ProductImageType)
+	# product_images = graphene.List(ProductImageType, search=graphene.String(required=True))
+	user_image = graphene.Field(UserFileType)
+	user_images = graphene.List(UserFileType)
+	shop_image = graphene.Field(ShopFileType)
+	shop_images = graphene.List(ShopFileType)
 
 	def resolve_product_images(self, info, **kwargs):
 		pass

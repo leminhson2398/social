@@ -28,7 +28,6 @@ DEBUG = True
 ALLOWED_HOSTS = [
     'localhost',
     '127.0.0.1',
-    '19fc2c02.ngrok.io',
 ]
 
 INTERNAL_IPS = [
@@ -46,14 +45,12 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     # added
-    # 'django_celery_beat',
-    # 'django_celery_results',
     'graphene_django',
-    'shop.apps.ShopConfig',
+    'shops.apps.ShopsConfig',
     'user.apps.UserConfig',
     'comment.apps.CommentConfig',
     'image.apps.ImageConfig',
-    # debug_toolbar
+    # fpr debug_toolbar
     'debug_toolbar',
 ]
 

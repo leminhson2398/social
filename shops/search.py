@@ -2,7 +2,7 @@ from elasticsearch_dsl.connections import connections
 from elasticsearch_dsl import DocType, Text, Date
 from elasticsearch.helpers import bulk
 from elasticsearch import Elasticsearch
-from shop import models
+from shops import models
 connections.create_connection()
 
 

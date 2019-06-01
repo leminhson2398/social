@@ -2,7 +2,7 @@ from collections import defaultdict
 from promise import Promise
 from promise.dataloader import DataLoader
 from django.contrib.auth.models import User
-from shop.models import Shop
+from shops.models import Shop
 
 
 class ShopsByUserIdLoader(DataLoader):

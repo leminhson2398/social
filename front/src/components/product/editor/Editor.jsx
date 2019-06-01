@@ -18,19 +18,13 @@ import SvgIcon from '@material-ui/core/SvgIcon'
 import ClickAwayListener from '@material-ui/core/ClickAwayListener'
 import InputBase from '@material-ui/core/InputBase'
 import Gallery from '../../gallery/Gallery'
-// import Typography from '@material-ui/core/Typography'
 import getDate from '../../../lib/getDate'
 import CategorySelector from './CategorySelector'
 // import style:
 import editorStyle from './editorStyle'
 // import icons
-import { Edit, Menu, AttachMoney } from '@material-ui/icons'
+import { Edit, Menu, AttachMoney, Layers } from '@material-ui/icons'
 
-const Unpin = () => (
-  <SvgIcon style={{ width: '14px', color: 'red', }}>
-    <path d="M2,5.27L3.28,4L20,20.72L18.73,22L12.8,16.07V22H11.2V16H6V14L8,12V11.27L2,5.27M16,12L18,14V16H17.82L8,6.18V4H7V2H17V4H16V12Z" />
-  </SvgIcon>
-)
 
 function ProductEditor() {
 
@@ -73,6 +67,7 @@ function ProductEditor() {
     })
   }
 
+
   return (
     <Paper elevation={1} className={classes.editor}>
       <DialogTitle disableTypography={true}>
@@ -80,10 +75,11 @@ function ProductEditor() {
           <InputLabel htmlFor="product-title-input">Product Title</InputLabel>
           <Input
             id="product-title-input"
+            type='text'
             className={classes.productTitle}
             endAdornment={
               <InputAdornment position="end">
-                <IconButton aria-label='Edit product title' color="primary" onClick={focusProductTitle}>
+                <IconButton aria-label="Edit product title" onClick={focusProductTitle} color="primary">
                   <Edit />
                 </IconButton>
               </InputAdornment>
@@ -132,7 +128,9 @@ function ProductEditor() {
                         title={`Unpin: ${image.name} ?`}
                         onClick={() => removeAnImage(image.name, image.size)}
                       >
-                        <Unpin />
+                        <SvgIcon style={{ width: '14px', color: 'red', }}>
+                          <path d="M2,5.27L3.28,4L20,20.72L18.73,22L12.8,16.07V22H11.2V16H6V14L8,12V11.27L2,5.27M16,12L18,14V16H17.82L8,6.18V4H7V2H17V4H16V12Z" />
+                        </SvgIcon>
                       </span>
                       <img src={image.content} alt={image.name} title={image.name} className={classes.image} />
                     </span>
@@ -187,13 +185,13 @@ function ProductEditor() {
 
       <DialogContent style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-around', overflow: 'visible' }}>
         <Paper elevation={0} className={classes.inputFields}>
-          <IconButton aria-label="Pice" color='primary' size="small">
+          <IconButton aria-label="Pice" size="small">
             <AttachMoney />
           </IconButton>
           <InputBase placeholder='Price' type="number" />
         </Paper>
         <Paper elevation={0} className={classes.inputFields}>
-          <IconButton aria-label="Sale off" color='primary' size="small">
+          <IconButton aria-label="Sale off" size="small">
             <SvgIcon>
               <path d="M18.5,3.5L3.5,18.5L5.5,20.5L20.5,5.5M7,4A3,3 0 0,0 4,7A3,3 0 0,0 7,10A3,3 0 0,0 10,7A3,3 0 0,0 7,4M17,14A3,3 0 0,0 14,17A3,3 0 0,0 17,20A3,3 0 0,0 20,17A3,3 0 0,0 17,14Z" />
             </SvgIcon>
@@ -202,7 +200,7 @@ function ProductEditor() {
         </Paper>
         <ClickAwayListener onClickAway={() => setState({ ...editorState, openCategorySelector: false })}>
           <Paper elevation={0} className={classes.inputFields}>
-            <IconButton aria-label="Menu" color='primary' size="small">
+            <IconButton aria-label="Menu" size="small">
               <Menu />
             </IconButton>
             <InputBase placeholder='Categories'
@@ -212,9 +210,10 @@ function ProductEditor() {
           </Paper>
         </ClickAwayListener>
         <Paper elevation={0} className={classes.inputFields}>
-          <IconButton aria-label="Total Product" color='primary' size="small">
+          <IconButton aria-label="Total Products" size="small">
             <SvgIcon>
-              <path d="M4,17V9H2V7H6V17H4M22,15C22,16.11 21.1,17 20,17H16V15H20V13H18V11H20V9H16V7H20A2,2 0 0,1 22,9V10.5A1.5,1.5 0 0,1 20.5,12A1.5,1.5 0 0,1 22,13.5V15M14,15V17H8V13C8,11.89 8.9,11 10,11H12V9H8V7H12A2,2 0 0,1 14,9V11C14,12.11 13.1,13 12,13H10V15H14Z" />
+              <Layers />
+              {/* <path d="M4,17V9H2V7H6V17H4M22,15C22,16.11 21.1,17 20,17H16V15H20V13H18V11H20V9H16V7H20A2,2 0 0,1 22,9V10.5A1.5,1.5 0 0,1 20.5,12A1.5,1.5 0 0,1 22,13.5V15M14,15V17H8V13C8,11.89 8.9,11 10,11H12V9H8V7H12A2,2 0 0,1 14,9V11C14,12.11 13.1,13 12,13H10V15H14Z" /> */}
             </SvgIcon>
           </IconButton>
           <InputBase placeholder='Total products' type='number' />

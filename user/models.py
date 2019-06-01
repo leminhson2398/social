@@ -9,10 +9,6 @@ from uuid import uuid4
 
 
 def validate_phone_number(value):
-    """
-    Use ValidationError here, when something went wrong,\
-    you can graphql will show error in it's format type
-    """
     if not str(AppUser.phone).isnumeric():
         raise ValidationError(
             gettext_lazy("%(value) is not a valida phone number."),
@@ -23,7 +19,7 @@ def validate_phone_number(value):
 class AppUser(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
     display_name = models.CharField(max_length=50, db_index=True, blank=True, null=False)
-    avatar = models.URLField(max_length=300)
+    avatar = models.URLField(blank=True, null=True)
     date_of_birth = models.DateField(blank=True, null=True)
     quote_of_life = models.CharField(max_length=100, blank=True, null=True)
     gender = models.CharField(max_length=10, choices=Ref.GENDERS, null=False, blank=False)
@@ -35,7 +31,7 @@ class AppUser(models.Model):
 
     def save(self, **kwargs):
         if not self.display_name:
-            self.display_name = self.user.username.strip()
+            self.display_name = self.user.username.strip().title()
         else:
             self.display_name = self.display_name.title()
         super().save(**kwargs)

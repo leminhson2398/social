@@ -7,8 +7,8 @@ const editorStyle = () => ({
 	productTitle: {
 		fontFamily: "'Lobster', sans-serif",
 		fontSize: 24,
-		color: '#585858',
 		maxWidth: 300,
+		color: '#696969de',
 	},
 	timeStamp: {
 		textAlign: 'right',

@@ -5,7 +5,8 @@ import uuid
 from django.dispatch import receiver
 from django.db.models.signals import post_save
 # below is for elasticsearch
-from shop.search import ShopIndex
+from shops.search import ShopIndex
+from django.contrib.auth.models import User
 
 
 class Category(models.Model):
@@ -19,7 +20,7 @@ class Category(models.Model):
         ordering            = ['-created']
         db_table            = 'category'
         verbose_name_plural = 'Categories'
-        index_together      = ['name', 'id']
+        index_together      = ['name']
 
     def __str__(self):
         if len(self.name) > 20:
@@ -37,6 +38,23 @@ class Category(models.Model):
         return self.name
 
 
+class EmployeeShip(models.Model):
+    """
+    class between other users and one shop
+    """
+    staff = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
+    shop  = models.ForeignKey('Shop', on_delete=models.CASCADE)
+    joined_from = models.DateTimeField(auto_now_add=True)
+    in_power = models.BooleanField(default=True, verbose_name='Is he/she working for shop currently.')
+    leaved_from = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-joined_from']
+
+    def __str__(self):
+        return self.staff.id
+
+
 class Shop(models.Model):
     name        = models.CharField(max_length=50, blank=True, null=False, db_index=True, unique=True)
     slug        = models.SlugField(max_length=50, blank=True, null=False, db_index=True)
@@ -49,12 +67,14 @@ class Shop(models.Model):
     phone       = models.CharField(max_length=12, blank=True, null=True)
     views       = models.PositiveIntegerField(default=0)
     trending    = models.BooleanField(default=False)
+    location    = models.CharField(max_length=200, null=True, blank=True, db_index=True)
+    employees   = models.ManyToManyField(User, through=EmployeeShip, related_name='employees')
 
     class Meta:
         ordering            = ['-created']
         db_table            = 'shop'
         verbose_name_plural = 'Shops'
-        index_together      = ['name', 'id']
+        index_together      = ['name', 'id', 'location']
 
     def __str__(self):
         if len(self.name) > 20:
@@ -65,8 +85,7 @@ class Shop(models.Model):
         pass
 
     def save(self, **kwargs):
-        self.name = "{} Shop".format(self.owner.username.title()) \
-            if not self.name else self.name.strip().title()
+        self.name = "{} Shop".format(self.owner.username.title()) if not self.name else self.name.strip().title()
 
         self.slug = slugify(self.name)
         if not self.email:
@@ -124,13 +143,13 @@ class ImportCountry(models.Model):
 
 
 class Product(models.Model):
-    id              = models.UUIDField(primary_key=True, default=uuid.uuid4)
+    id              = models.UUIDField(primary_key=True, default=uuid.uuid4, db_index=True)
     title           = models.CharField(max_length=100, null=False, blank=False, db_index=True, unique=True)
-    slug            = models.SlugField(max_length=100, null=False, blank=True, db_index=True)
-    description     = models.TextField(db_index=True, null=False, max_length=3000, blank=False)
+    slug            = models.SlugField(max_length=100, null=False, blank=True, db_index=True, unique=True)
+    description     = models.TextField(null=False, blank=False)
     shop            = models.ForeignKey(Shop, on_delete=models.CASCADE, related_name='products')
     # verified      = models.BooleanField(default=False)
-    categories      = models.ManyToManyField(Category, related_name='products', symmetrical=False)
+    category        = models.ForeignKey(Category, related_name='products', on_delete=models.CASCADE)
     added           = models.DateTimeField(auto_now_add=True)
     updated         = models.DateTimeField(auto_now=True)
     price           = models.DecimalField(max_digits=10, decimal_places=2, db_index=True)
@@ -145,7 +164,7 @@ class Product(models.Model):
         ordering            = ['-added']
         db_table            = 'product'
         verbose_name_plural = 'Products'
-        index_together = ('slug', 'title', 'description')
+        index_together = ('slug', 'title', 'id')
 
     def __str__(self):
         if len(str(self.title)) > 20:

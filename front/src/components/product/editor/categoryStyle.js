@@ -1,14 +1,15 @@
 const selectStyle = () => ({
   selector: {
     padding: 8,
-    // position: 'absolute',
+    left: 0,
     zIndex: 1,
     background: '#ffffff',
     boxShadow: '2px 2px 2px rgba(0, 0, 0, 0.25)',
     borderRadius: 4,
-    // width: '100%',
+    width: '100%',
     position: 'absolute',
     maxHeight: 300,
+    top: '110%',
   },
   search: {
     border: '1px solid #ddd',

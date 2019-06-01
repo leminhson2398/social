@@ -9,18 +9,18 @@ class Chart extends Component {
   constructor(props) {
     super(props)
     this.state = {
+      chartData: null,
+    }
+  }
+
+  componentDidMount() {
+    this.setState({
       chartData: {
         labels: [5, 4, 3, 2, 1],
         datasets: [
           {
             label: 'bought',
-            data: [
-              75,
-              100,
-              7,
-              6,
-              2,
-            ],
+            data: [75, 100, 7, 6, 2],
             backgroundColor: [
               lime.A700,
               green[700],
@@ -31,7 +31,7 @@ class Chart extends Component {
           }
         ]
       }
-    }
+    })
   }
 
   render() {

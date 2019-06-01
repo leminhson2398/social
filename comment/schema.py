@@ -3,7 +3,7 @@ from graphene_django import DjangoObjectType
 from comment.models import ProductComment, ShopComment
 from django.db.models import Q, F
 from graphene_file_upload.scalars import Upload
-from shop.models import Product
+from shops.models import Product
 
 
 class ShopCommentType(DjangoObjectType):

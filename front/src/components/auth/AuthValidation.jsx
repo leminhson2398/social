@@ -13,7 +13,7 @@ import React from 'react'
 function PasswordValidation(password) {
 
   const fullCases = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/
-  const partsObject = {
+  const singleCase = {
     'one uppercase character': /[A-Z]{1,}/,
     'one lowercase character': /[a-z]{1,}/,
     'one digit': /[0-9]{1,}/,
@@ -23,12 +23,12 @@ function PasswordValidation(password) {
 
   if (fullCases.test(password)) {
     return {
-      validationComponent: <ul>{Object.keys(partsObject).map((item, index) => <li style={{ fontSize: '12px', color: '#559004' }} key={index}>{item}</li>)}</ul>,
+      validationComponent: <ul>{Object.keys(singleCase).map((item, index) => <li style={{ fontSize: '12px', color: '#559004' }} key={index}>{item}</li>)}</ul>,
       error: false,
     }
   } else {
     return {
-      validationComponent: <ul>{Object.keys(partsObject).map((item, index) => (<li style={{ fontSize: '12px', color: partsObject[item].test(password) ? '#559004' : '#f44336' }} key={index}>{item}</li>))}</ul>,
+      validationComponent: <ul>{Object.keys(singleCase).map((item, index) => (<li style={{ fontSize: '12px', color: singleCase[item].test(password) ? '#559004' : '#f44336' }} key={index}>{item}</li>))}</ul>,
       error: true,
     }
   }

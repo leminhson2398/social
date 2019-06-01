@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import { makeStyles } from '@material-ui/core/styles'
 import Collapse from '@material-ui/core/Collapse'
 import InputBase from '@material-ui/core/InputBase'
@@ -51,14 +51,14 @@ function CategorySelector({ openOrNot, ...other }) {
             </InputAdornment>
           }
           // onkeypress for navigating through items
-          onKeyDown={(e) => {
-            if (e.keyCode === 40) {
-              // arrow key down
-              changeState({ ...overall, itemOverIndex: (itemOverIndex + 1) % selectValues.length })
-            } else if (e.keyCode === 38) {
-              changeState({ ...overall, itemOverIndex: Math.abs((itemOverIndex - 1)) % selectValues.length })
-            }
-          }}
+          // onKeyDown={(e) => {
+          //   if (e.keyCode === 40) {
+          //     // arrow key down
+          //     changeState({ ...overall, itemOverIndex: (itemOverIndex + 1) % selectValues.length })
+          //   } else if (e.keyCode === 38) {
+          //     changeState({ ...overall, itemOverIndex: Math.abs((itemOverIndex - 1)) % selectValues.length })
+          //   }
+          // }}
         />
       </div>
       <div className={classes.area2}>
