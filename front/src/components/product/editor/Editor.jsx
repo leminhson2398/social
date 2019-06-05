@@ -1,5 +1,5 @@
-import React, { Fragment, useState, useReducer, } from 'react'
-import { makeStyles } from '@material-ui/core/styles'
+import React, { useState, useReducer, useMemo } from 'react'
+import { makeStyles } from '@material-ui/styles'
 import Paper from '@material-ui/core/Paper'
 import Grid from '@material-ui/core/Grid'
 import Collapse from '@material-ui/core/Collapse'
@@ -19,24 +19,72 @@ import ClickAwayListener from '@material-ui/core/ClickAwayListener'
 import InputBase from '@material-ui/core/InputBase'
 import Gallery from '../../gallery/Gallery'
 import getDate from '../../../lib/getDate'
+import ColorPalette from './ColorPalette'
 import CategorySelector from './CategorySelector'
+// Quill Editor
+import Quill from 'quill'
 // import style:
 import editorStyle from './editorStyle'
 // import icons
 import { Edit, Menu, AttachMoney, Layers } from '@material-ui/icons'
 
+function reducer(state, action) {
+  return Object.assign({}, state, action)
+}
+function createStore(reducer) {
+  let state = { index: null, length: null }
+  const getState = () => state
+  /**
+   * 
+   * @param {Object} action - {index: Int, length: Int}
+   */
+  const dispatch = (action) => (
+    state = reducer(state, action)
+  )
+  return { getState, dispatch }
+}
+const quillStore = createStore(reducer)
+
 
 function ProductEditor() {
 
+  // classes will remain the same 
   const classes = makeStyles(editorStyle)()
+  let quillRef = React.createRef()
 
   const [editorState, setState] = useState({
     userUploadImages: [],
     openUserUploadFileField: false,
     openCategorySelector: false,
     openFileGallery: false,
+    openColorPalette: false,
+    quillDependencies: null,
   })
-  let { userUploadImages, openUserUploadFileField, openCategorySelector, openFileGallery } = editorState
+
+  const {
+    userUploadImages, openUserUploadFileField, openCategorySelector, openFileGallery, openColorPalette,
+    quillDependencies,
+  } = editorState
+
+  // quillEditor will not change until quillDependencies changes
+  let promise = useMemo(() => {
+    return new Promise(resolve => {
+      setTimeout(() => {
+        let quill = new Quill(quillRef.current, {
+          modules: {
+            toolbar: false,
+          },
+          placeholder: 'Describe your product here.'
+        })
+        resolve(quill)
+      }, 100)
+    })
+  }, [quillDependencies])
+
+  let quillEditor = null
+  promise.then(quill => {
+    quillEditor = quill
+  })
 
   function toggleFileGallery_() {
     // toggle file gallery
@@ -55,7 +103,7 @@ function ProductEditor() {
     // remove an image
     setState({
       ...editorState,
-      userUploadImages: userUploadImages.filter(image => (image.name !== imgName && image.size !== imgSize))
+      userUploadImages: userUploadImages.filter(image => (image.name !== imgName && image.size !== imgSize)),
     })
   }
 
@@ -65,6 +113,39 @@ function ProductEditor() {
       ...editorState,
       openUserUploadFileField: !openUserUploadFileField,
     })
+  }
+
+  console.log('hihi')
+  /**
+   * 
+   * @param {String} type - 'bold' || 'italic'
+   */
+  function formatSelection(type) {
+    type = type.toLowerCase()
+    // this function listen and is invoked when user click 'bold' or 'italic' button
+    let quillSelection = quillEditor.getSelection()
+    if (quillSelection && quillSelection.length > 0) {
+      quillStore.dispatch(quillSelection)
+    }
+    if (type === 'bold' || type === 'italic') {
+      let { index, length } = quillStore.getState()
+      // if type applied, change it conversely
+      let typeAppliedOrNot = quillEditor.getFormat(index, length)[type]
+      quillEditor.formatText(index, length, type, typeAppliedOrNot ? false : true)
+    }
+    else if (type === 'list') {
+      quillEditor.setContents({ "ops": [{ "insert": "one" }, { "attributes": { "list": "bullet" }, "insert": "\n" }] })
+    }
+  }
+
+  function setSelectionColor(value) {
+    let { index, length } = quillStore.getState()
+    if (value === 'unset') {
+      // quillEditor.formatText(index, length, { color: false })
+      quillEditor.formatText(index, length, 'color', false)
+    } else {
+      quillEditor.formatText(index, length, 'color', value)
+    }
   }
 
 
@@ -79,7 +160,7 @@ function ProductEditor() {
             className={classes.productTitle}
             endAdornment={
               <InputAdornment position="end">
-                <IconButton aria-label="Edit product title" onClick={focusProductTitle} color="primary">
+                <IconButton aria-label="Edit product title" onClick={focusProductTitle}>
                   <Edit />
                 </IconButton>
               </InputAdornment>
@@ -89,27 +170,39 @@ function ProductEditor() {
           <FormHelperText className={classes.timeStamp}>{getDate()}</FormHelperText>
         </FormControl>
       </DialogTitle>
-      <DialogContent style={{ paddingTop: '24px', }}>
+      <DialogContent className={classes.dialogContent}>
         <span aria-label="product-description-label" className={classes.producEditorLabels}>
           DESCRIPTION
         </span>
         <Paper elevation={0} className={classes.editArea}>
           <Grid container direction="column">
-            <Grid
-              item
-              className={classes.descriptionArea}
-              contentEditable={true}
-              spellCheck={true}
-              role='textbox'
-              tabIndex={0}
-            />
+            {/* Quill Editor */}
+            <Grid item ref={quillRef} />
             <Grid item style={{ textAlign: 'right' }}>
+              <ButtonIcon iconName='bold' btnType='fab30' tooltip='Bold' onClick={() => formatSelection('bold')} />
+              <ButtonIcon iconName='italic' btnType='fab30' tooltip='Italic' onClick={() => formatSelection('italic')} />
+              <ClickAwayListener onClickAway={() => {
+                if (openColorPalette) setState({ ...editorState, openColorPalette: false })
+              }}>
+                <span style={{ position: 'relative' }}>
+                  <ButtonIcon iconName='colortext' btnType='fab30' tooltip='Insert color' onClick={() => {
+                    setState({ ...editorState, openColorPalette: !openColorPalette })
+                    formatSelection('color')
+                  }} />
+                  {/* <Fade in={openColorPalette}> */}
+                  {openColorPalette ? (
+                    <ColorPalette giveMeColor={colorValue => setSelectionColor(colorValue)} />
+                  ) : null}
+                  {/* </Fade> */}
+                </span>
+              </ClickAwayListener>
+              <ButtonIcon iconName='list' btnType='fab30' tooltip='Add List' onClick={() => formatSelection('list')} />
               <ButtonIcon iconName='face' btnType='fab30' tooltip='Add emoji' />
             </Grid>
           </Grid>
         </Paper>
       </DialogContent>
-      <DialogContent>
+      <DialogContent className={classes.dialogContent}>
         <span aria-label="product-description-label" className={classes.producEditorLabels}>
           IMAGES
         </span>
@@ -145,7 +238,7 @@ function ProductEditor() {
         </Paper>
       </DialogContent>
       <Collapse in={openFileGallery}>
-        <DialogContent>
+        <DialogContent className={classes.dialogContent}>
           <Gallery />
         </DialogContent>
       </Collapse>
@@ -165,7 +258,7 @@ function ProductEditor() {
       </DialogContent>
 
       <Collapse in={openUserUploadFileField}>
-        <DialogContent>
+        <DialogContent className={classes.dialogContent}>
           <span aria-label="product-description-label" className={classes.producEditorLabels}>
             FILES
           </span>
@@ -198,7 +291,9 @@ function ProductEditor() {
           </IconButton>
           <InputBase placeholder='Sale off' />
         </Paper>
-        <ClickAwayListener onClickAway={() => setState({ ...editorState, openCategorySelector: false })}>
+        <ClickAwayListener onClickAway={() => {
+          if (openCategorySelector) setState({ ...editorState, openCategorySelector: false })
+        }}>
           <Paper elevation={0} className={classes.inputFields}>
             <IconButton aria-label="Menu" size="small">
               <Menu />
@@ -213,7 +308,6 @@ function ProductEditor() {
           <IconButton aria-label="Total Products" size="small">
             <SvgIcon>
               <Layers />
-              {/* <path d="M4,17V9H2V7H6V17H4M22,15C22,16.11 21.1,17 20,17H16V15H20V13H18V11H20V9H16V7H20A2,2 0 0,1 22,9V10.5A1.5,1.5 0 0,1 20.5,12A1.5,1.5 0 0,1 22,13.5V15M14,15V17H8V13C8,11.89 8.9,11 10,11H12V9H8V7H12A2,2 0 0,1 14,9V11C14,12.11 13.1,13 12,13H10V15H14Z" /> */}
             </SvgIcon>
           </IconButton>
           <InputBase placeholder='Total products' type='number' />

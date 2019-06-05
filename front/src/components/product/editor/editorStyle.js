@@ -14,19 +14,8 @@ const editorStyle = () => ({
 		textAlign: 'right',
 	},
 	editArea: {
-		padding: 10,
+		padding: '10px 10px 0 10px',
 		position: 'relative',
-	},
-	descriptionArea: {
-		fontSize: 14,
-		color: '#333333',
-		lineHeight: '20px',
-		wordSpacing: 1,
-		wordBreak: 'break-all',
-		wordBreak: 'break-word',
-		outline: 'none',
-		// width: '100%',
-		// maxWidth: 552,
 	},
 	producEditorLabels: {
 		fontWeight: 'bold',
@@ -41,6 +30,7 @@ const editorStyle = () => ({
 		fontSize: '0.75rem',
 		userSelect: 'none',
 		boxShadow: '0 .125rem .25rem rgba(0,0,0,.075)',
+		cursor: 'pointer',
 	},
 	inputFields: {
 		padding: 6,
@@ -76,6 +66,9 @@ const editorStyle = () => ({
 		height: 20,
 		borderRadius: '50%',
 		display: 'hidden',
+	},
+	dialogContent: {
+		overflow: 'visible',
 	},
 })
 

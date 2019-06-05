@@ -155,29 +155,31 @@ function Signing() {
                     }
                     label="Remember me!"
                   />
-                  <Mutation mutation={TOKEN_AUTH}
-                    variables={{ username: loginUsername, password: loginPassword }}
-                    onCompleted={data => console.log(data)}
-                    onError={error => alert(error)}
-                  >
-                    {(tokenAuth) => (
-                      <Fab
-                        variant="extended"
-                        aria-label="login"
-                        className={classes.btnStyle}
-                        onClick={() => {
-                          if (checkForAuthenticationButtons('login')) {
-                            console.error('something went wrong with login process')
-                          } else {
-                            tokenAuth()
+                  <Mutation mutation={TOKEN_AUTH}>
+                    {(tokenAuth, { data, loading, error }) => (
+                      <Fragment>
+                        <Fab
+                          variant="extended"
+                          aria-label="login"
+                          className={classes.btnStyle}
+                          onClick={() => {
+                            if (checkForAuthenticationButtons('login')) {
+                              console.error('something went wrong with login process')
+                            } else {
+                              tokenAuth({ variables: { username: loginUsername, password: loginPassword } })
+                            }
+                          }}
+                          // check fields value validation status to determine button state
+                          disabled={
+                            checkForAuthenticationButtons('login')
                           }
-                        }}
-                        disabled={// check fields value length or validation text
-                          checkForAuthenticationButtons('login')
-                        }
-                      >
-                        Let's GO
-                      </Fab>
+                        >
+                          Let's GO
+                        </Fab>
+                        {loading ? console.log('loading') : null}
+                        {data ? console.log(data) : null}
+                        {error ? console.log(error) : null}
+                      </Fragment>
                     )}
                   </Mutation>
                   <div style={{ justifyContent: 'center', paddingTop: '20px', display: 'flex' }}>

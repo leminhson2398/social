@@ -45,7 +45,11 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     # added
+    # rest_framework
+    'rest_framework',
+    'rest_framework_jwt',
     'graphene_django',
+    # apps
     'shops.apps.ShopsConfig',
     'user.apps.UserConfig',
     'comment.apps.CommentConfig',

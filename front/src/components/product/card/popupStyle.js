@@ -1,4 +1,4 @@
-const popupStyle = theme => ({
+const popupStyle = () => ({
   paper: {
     width: 230,
     // height: 150,

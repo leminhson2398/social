@@ -6,7 +6,6 @@ import CardContent from '@material-ui/core/CardContent'
 import CardMedia from '@material-ui/core/CardMedia'
 import Typography from '@material-ui/core/Typography'
 import Avatar from '@material-ui/core/Avatar'
-import Fade from '@material-ui/core/Fade'
 // style
 import cardStyle from './cardStyle'
 import avatar from '../../../static/img/shop-icon.png'
@@ -23,14 +22,12 @@ function ProductCard() {
   const classes = makeStyles(cardStyle)()
 
   const [overall, changeState] = useState({
-    openMediaDimmer: null,
     socialShareVisible: null,
     openPopup: false,
     anchorEl: null,
   })
   let {
-    openMediaDimmer, openPopup,
-    socialShareVisible, anchorEl,
+    openPopup, socialShareVisible, anchorEl,
   } = overall
   // for setting timeout
   let popupTimeout = null
@@ -67,7 +64,7 @@ function ProductCard() {
               }}
               onMouseLeave={() => {
                 // if (popupTimeout === null) {
-                  popupTimeout = setTimeout(() => changeState({ ...overall, openPopup: false }), 6000)
+                popupTimeout = setTimeout(() => changeState({ ...overall, openPopup: false }), 6000)
                 // }
               }}
             />
@@ -87,47 +84,44 @@ function ProductCard() {
       <CardMedia
         className={classes.cardMedia}
         image={media}
-        onMouseEnter={() => changeState({ ...overall, openMediaDimmer: true })}
-        onMouseLeave={() => changeState({ ...overall, openMediaDimmer: false })}
       >
-        <Fade in={openMediaDimmer} timeout={500}>
-          <div
-            aria-label="Media Meta"
-            className={classes.mediaMetaDimmer}
-          >
-            <div className={classes.cardMediaAction}>
-              <ButtonIcon iconName="visibility" tooltip="View Detail" btnType='rec30' />
-              <ButtonIcon iconName="bookmark" tooltip="Save" btnType='rec30' />
-              <span
-                style={{ position: 'relative' }}
-              >
-                <ButtonIcon iconName="share" tooltip="Quick Share" btnType='rec30'
-                  onClick={() => changeState({ ...overall, socialShareVisible: !socialShareVisible })}
-                />
-                <SocialSharePanel
-                  // customStyle will override default style already applied
-                  customStyle={{
-                    position: 'absolute',
-                    top: '50%', transform: 'translate(-105%, -50%)',
-                    visibility: socialShareVisible ? 'visible' : 'hidden',
-                  }}
-                />
-              </span>
+        <div
+          id="media-meta"
+          aria-label="Media Meta"
+          className={classes.mediaMetaDimmer}
+        >
+          <div className={classes.cardMediaAction}>
+            <ButtonIcon iconName="visibility" tooltip="View Detail" btnType='rec30' />
+            <ButtonIcon iconName="bookmark" tooltip="Save" btnType='rec30' />
+            <span
+              style={{ position: 'relative' }}
+            >
+              <ButtonIcon iconName="share" tooltip="Quick Share" btnType='rec30'
+                onClick={() => changeState({ ...overall, socialShareVisible: !socialShareVisible })}
+              />
+              <SocialSharePanel
+                // customStyle will override default style already applied
+                customStyle={{
+                  position: 'absolute',
+                  top: '50%', transform: 'translate(-105%, -50%)',
+                  visibility: socialShareVisible ? 'visible' : 'hidden',
+                }}
+              />
+            </span>
+          </div>
+          <div className={classes.cardMediaInfo}>
+            <div
+              style={{ alignItems: 'center', display: 'inline-flex', marginRight: '20px' }}
+            >
+              <span><BarChart fontSize="small" /></span>
+              <span>1.5k</span>
             </div>
-            <div className={classes.cardMediaInfo}>
-              <div
-                style={{ alignItems: 'center', display: 'inline-flex', marginRight: '20px' }}
-              >
-                <span><BarChart fontSize="small" /></span>
-                <span>1.5k</span>
-              </div>
-              <div style={{ alignItems: 'center', display: 'inline-flex', marginRight: '20px' }}>
-                <span><ShoppingCart fontSize="small" /></span>
-                <span>4.0/5</span>
-              </div>
+            <div style={{ alignItems: 'center', display: 'inline-flex', marginRight: '20px' }}>
+              <span><ShoppingCart fontSize="small" /></span>
+              <span>4.0/5</span>
             </div>
           </div>
-        </Fade>
+        </div>
       </CardMedia>
       <CardContent>
         <Typography component="h5" variant="h6" className={classes.cardTitle}>

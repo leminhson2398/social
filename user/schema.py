@@ -5,6 +5,10 @@ from user.forms import SignupForm
 from django.core.validators import ValidationError
 from user.models import AppUser
 import json
+from rest_framework_jwt.serializers import (
+    JSONWebTokenSerializer,
+    RefreshJSONWebTokenSerializer,
+)
 
 
 class UserType(DjangoObjectType):
@@ -34,17 +38,79 @@ class Query(graphene.AbstractType):
             try:
                 users = User.objects.filter(username__icontains=search)
             except User.DoesNotExist:
-                raise Exception(f"User with username='{search}' does not exist.")
+                raise Exception(
+                    f"User with username='{search}' does not exist.")
             else:
                 return users
         else:
             raise Exception("You must enter an username.")
 
 
+class Login(graphene.Mutation):
+    class Arguments:
+        email = graphene.String(required=True)
+        password = graphene.String(required=True)
+
+    ok = graphene.Boolean(required=True)
+    errors = graphene.List(graphene.String)
+    token = graphene.String()
+    user = graphene.Field(UserType)
+
+    def mutate(self, info, **kwargs):
+        serializer = JSONWebTokenSerializer(data=kwargs)
+        if serializer.is_valid():
+            token = serializer.object['token']
+            user = serializer.object['user']
+            return Login(
+                ok=True,
+                user=user,
+                errors=None,
+                token=token,
+            )
+        else:
+            return Login(
+                ok=False,
+                token=None,
+                errors=['email', 'Your credentials were invalid.']
+            )
+
+
+class RefreshToken(graphene.Mutation):
+    class Arguments:
+        token = graphene.String(required=True)
+
+    ok = graphene.Boolean()
+    errors = graphene.List(graphene.String)
+    token = graphene.String()
+
+    def mutate(self, info, **kwargs):
+        token = kwargs.get('token', None)
+        if token:
+            serializer = RefreshJSONWebTokenSerializer(data={'token': token})
+            if serializer.is_valid():
+                return RefreshToken(
+                    ok=True,
+                    token=serializer.object['token'],
+                    errors=None,
+                )
+            else:
+                return RefreshToken(
+                    ok=False,
+                    token=None,
+                    errors=['email', 'Unable to login with provided credentials'],
+                )
+        else:
+            return RefreshToken(
+                ok=False,
+                token=None,
+                errors=['email', 'Unable to login with provided credentials'],
+            )
+
+
 class CreateAppUser(graphene.Mutation):
-    ok      = graphene.Boolean(required=True)
-    user    = graphene.Field(UserType, required=False)
-    error   = graphene.String(required=False)
+    ok = graphene.Boolean(required=True)
+    user = graphene.Field(UserType, required=False)
+    error = graphene.String(required=False)
 
     class Arguments:
         username = graphene.String(required=True)
