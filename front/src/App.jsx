@@ -5,7 +5,6 @@ import ProductCard from './components/product/card/Card'
 // import Assesment from './components/product/detail/Assesment'
 import ProductEditor from './components/product/editor/Editor'
 // import SwipeableTextMobileStepper from './components/product/detail/SwipeViewer'
-// import ImageGallery from './components/gallery/ImageGallery'
 import ProductDetail from './components/product/detail/ProductDetail'
 import 'quill/dist/quill.core.css'
 
@@ -20,7 +19,6 @@ export default class App extends React.Component {
         <Signing />
         <ProductDetail />
         {/* <SwipeableTextMobileStepper /> */}
-        {/* <ImageGallery /> */}
       </Fragment>
     )
   }

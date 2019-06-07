@@ -3,17 +3,23 @@ import React from 'react'
 import ReactDOMServer from 'react-dom/server'
 import { ServerStyleSheets, ThemeProvider } from '@material-ui/styles'
 import theme from './theme'
+import App from './src/App'
 
 function renderFullPage(html, css) {
   return `
   <!DOCTYPE html>
   <html>
     <head>
-      <title>My page</title>
-      <style id="jss-server-side">${css}</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Lobster" rel="stylesheet">
+    <style id="jss-server-side">${css}</style>
+    <title>App</title>
     </head>
     <body>
-      <div id="root">${html}</div>
+      <div id="app">${html}</div>
     </body>
   </html>
   `

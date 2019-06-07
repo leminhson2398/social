@@ -5,10 +5,9 @@ from user.forms import SignupForm
 from django.core.validators import ValidationError
 from user.models import AppUser
 import json
-from rest_framework_jwt.serializers import (
-    JSONWebTokenSerializer,
-    RefreshJSONWebTokenSerializer,
-)
+from rest_framework_jwt.serializers import RefreshJSONWebTokenSerializer
+# import custom JSONWebTokenSerializer
+from user.utils import CustomJSONWebTokenSerializer
 
 
 class UserType(DjangoObjectType):
@@ -39,7 +38,7 @@ class Query(graphene.AbstractType):
                 users = User.objects.filter(username__icontains=search)
             except User.DoesNotExist:
                 raise Exception(
-                    f"User with username='{search}' does not exist.")
+                    f"User with username='{search!r}' does not exist.")
             else:
                 return users
         else:
@@ -57,7 +56,7 @@ class Login(graphene.Mutation):
     user = graphene.Field(UserType)
 
     def mutate(self, info, **kwargs):
-        serializer = JSONWebTokenSerializer(data=kwargs)
+        serializer = CustomJSONWebTokenSerializer(data=kwargs)
         if serializer.is_valid():
             token = serializer.object['token']
             user = serializer.object['user']
@@ -76,34 +75,28 @@ class Login(graphene.Mutation):
 
 
 class RefreshToken(graphene.Mutation):
+    """
+    Mutation to reauthenticate a user
+    """
+
     class Arguments:
         token = graphene.String(required=True)
 
-    ok = graphene.Boolean()
+    success = graphene.Boolean()
     errors = graphene.List(graphene.String)
     token = graphene.String()
 
-    def mutate(self, info, **kwargs):
-        token = kwargs.get('token', None)
-        if token:
-            serializer = RefreshJSONWebTokenSerializer(data={'token': token})
-            if serializer.is_valid():
-                return RefreshToken(
-                    ok=True,
-                    token=serializer.object['token'],
-                    errors=None,
-                )
-            else:
-                return RefreshToken(
-                    ok=False,
-                    token=None,
-                    errors=['email', 'Unable to login with provided credentials'],
-                )
+    def mutate(self, info, token):
+        serializer = RefreshJSONWebTokenSerializer(data={"token": token})
+        if serializer.is_valid():
+            return RefreshToken(
+                success=True, token=serializer.object["token"], errors=None
+            )
         else:
             return RefreshToken(
-                ok=False,
+                success=False,
                 token=None,
-                errors=['email', 'Unable to login with provided credentials'],
+                errors=["email", "Unable to login with provided credentials."],
             )
 
 
@@ -128,30 +121,7 @@ class CreateAppUser(graphene.Mutation):
             return CreateAppUser(ok=False, error=json.dumps(form.errors))
 
 
-# class CreateUserAvatar(graphene.Mutation):
-#     image = graphene.Field(ImageType)
-
-#     class Arguments:
-#         image = graphene.String(required=True)
-
-#     def mutate(self, info, **kwargs):
-#         user = info.context.user
-#         if user.is_anonymous:
-#             raise Exception("You must log in to upload new image.")
-
-#         rawImageData = kwargs.get('image', '')
-#         # get byte64 data here, processing it using celery and save to database
-#         if not rawImageData:
-#             return
-
-#         # call to function in order to process image asynchorously
-#         image = tasks.process_uploaded_image_data(rawBase64Data=rawImageData, user_id=user.id)
-#         # print(image.image.url)
-#         return CreateUserAvatar(
-#             image=image
-#         )
-
-
 class Mutation(graphene.ObjectType):
     create_user = CreateAppUser.Field()
     # create_avatar = CreateUserAvatar.Field()
+    login = Login.Field()

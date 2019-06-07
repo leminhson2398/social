@@ -115,7 +115,6 @@ function ProductEditor() {
     })
   }
 
-  console.log('hihi')
   /**
    * 
    * @param {String} type - 'bold' || 'italic'
@@ -126,13 +125,15 @@ function ProductEditor() {
     let quillSelection = quillEditor.getSelection()
     if (quillSelection && quillSelection.length > 0) {
       quillStore.dispatch(quillSelection)
+
+      if (type === 'bold' || type === 'italic') {
+        let { index, length } = quillStore.getState()
+        // if type applied, change it conversely
+        let typeAppliedOrNot = quillEditor.getFormat(index, length)[type]
+        quillEditor.formatText(index, length, type, typeAppliedOrNot ? false : true)
+      }
     }
-    if (type === 'bold' || type === 'italic') {
-      let { index, length } = quillStore.getState()
-      // if type applied, change it conversely
-      let typeAppliedOrNot = quillEditor.getFormat(index, length)[type]
-      quillEditor.formatText(index, length, type, typeAppliedOrNot ? false : true)
-    }
+
     else if (type === 'list') {
       quillEditor.setContents({ "ops": [{ "insert": "one" }, { "attributes": { "list": "bullet" }, "insert": "\n" }] })
     }
@@ -189,14 +190,12 @@ function ProductEditor() {
                     setState({ ...editorState, openColorPalette: !openColorPalette })
                     formatSelection('color')
                   }} />
-                  {/* <Fade in={openColorPalette}> */}
                   {openColorPalette ? (
                     <ColorPalette giveMeColor={colorValue => setSelectionColor(colorValue)} />
                   ) : null}
-                  {/* </Fade> */}
                 </span>
               </ClickAwayListener>
-              <ButtonIcon iconName='list' btnType='fab30' tooltip='Add List' onClick={() => formatSelection('list')} />
+              <ButtonIcon iconName='list' btnType='fab30' tooltip='Add List' onClick={() => console.log(quillEditor.getLine(1))} />
               <ButtonIcon iconName='face' btnType='fab30' tooltip='Add emoji' />
             </Grid>
           </Grid>
@@ -237,7 +236,7 @@ function ProductEditor() {
           </Grid>
         </Paper>
       </DialogContent>
-      <Collapse in={openFileGallery}>
+      <Collapse in={openFileGallery} timeout={1500}>
         <DialogContent className={classes.dialogContent}>
           <Gallery />
         </DialogContent>
@@ -300,6 +299,7 @@ function ProductEditor() {
             </IconButton>
             <InputBase placeholder='Categories'
               onFocus={() => setState({ ...editorState, openCategorySelector: true })}
+            // multiline={true}
             />
             <CategorySelector openOrNot={openCategorySelector} />
           </Paper>

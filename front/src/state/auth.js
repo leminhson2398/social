@@ -1,6 +1,6 @@
 import validator from 'validator'
-import React from 'react'
 import PasswordValidation from '../components/auth/AuthValidation'
+
 
 export const authState = {
   loginUsername: '', // 0

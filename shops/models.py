@@ -44,15 +44,24 @@ class EmployeeShip(models.Model):
     """
     staff = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
     shop  = models.ForeignKey('Shop', on_delete=models.CASCADE)
-    joined_from = models.DateTimeField(auto_now_add=True)
-    in_power = models.BooleanField(default=True, verbose_name='Is he/she working for shop currently.')
-    leaved_from = models.DateTimeField(auto_now_add=True)
+    joined_since = models.DateTimeField(auto_now_add=True)
+    working = models.BooleanField(default=True, verbose_name='Is he/she working for shop currently.')
+    left_since = models.DateField(null=True, blank=True)
 
     class Meta:
-        ordering = ['-joined_from']
+        ordering = ['-joined_since']
 
     def __str__(self):
         return self.staff.id
+
+
+class Following(models.Model):
+    """
+    m2m people follow shops
+    """
+    shop = models.ForeignKey('Shop', on_delete=models.CASCADE, related_name='following')
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='following')
+    created = models.DateTimeField(auto_now_add=True)
 
 
 class Shop(models.Model):
@@ -69,12 +78,14 @@ class Shop(models.Model):
     trending    = models.BooleanField(default=False)
     location    = models.CharField(max_length=200, null=True, blank=True, db_index=True)
     employees   = models.ManyToManyField(User, through=EmployeeShip, related_name='employees')
+    followers   = models.ManyToManyField(User, through=Following, related_name='followers')
+    active      = models.BooleanField(default=False, db_index=True)
 
     class Meta:
         ordering            = ['-created']
         db_table            = 'shop'
         verbose_name_plural = 'Shops'
-        index_together      = ['name', 'id', 'location']
+        index_together      = ['name', 'id', 'location', 'active']
 
     def __str__(self):
         if len(self.name) > 20:

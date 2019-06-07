@@ -2,6 +2,7 @@ import React from 'react'
 import ReactDOM from 'react-dom'
 import { ThemeProvider } from '@material-ui/styles'
 import theme from './theme'
+import App from './src/App'
 
 function Main() {
   React.useEffect(() => {
@@ -13,14 +14,15 @@ function Main() {
 
   return (
     <ThemeProvider theme={theme}>
-      <div>
-        hihihi
-      </div>
+      <App />
     </ThemeProvider>
   )
 }
 
 ReactDOM.hydrate(
   <Main />,
-  document.querySelector('#root')
+  document.querySelector('#app')
 )
+
+    // "start": "webpack-dev-server --config ./webpack.config.js --mode development",
+

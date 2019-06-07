@@ -1,5 +1,12 @@
 import { gql } from 'apollo-boost'
 
+export const LOGIN = gql`
+  mutation Login($email: String!, $password: String!) {
+    login(email: $email, password: $password) {
+      token
+    }
+  }
+`
 
 export const TOKEN_AUTH = gql`
   # This mutstion is used for log an user into system

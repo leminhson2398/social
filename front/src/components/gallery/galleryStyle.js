@@ -18,7 +18,7 @@ const galleryStyle = theme => ({
     cursor: 'pointer',
   },
   galleryBody: {
-    height: 300,
+    height: 370,
     overflowY: 'scroll',
     display: 'flex',
     flexWrap: 'wrap',
@@ -47,8 +47,20 @@ const galleryStyle = theme => ({
       cursor: 'pointer',
     },
   },
-  leftControl: {
-
+  uploadImageContainer: {
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    height: '100%',
+  },
+  imageUploadOuter: {
+    border: '2px dashed #024686',
+    borderRadius: 10,
+    width: 250,
+    height: 160,
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   imageSpan: {
     width: 100,

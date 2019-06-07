@@ -1,4 +1,4 @@
-import React, { useState, useReducer, Fragment } from 'react'
+import React, { useState, useReducer, Fragment, useMemo } from 'react'
 import Paper from '@material-ui/core/Paper'
 import Grid from '@material-ui/core/Grid'
 import Hidden from '@material-ui/core/Hidden'
@@ -46,33 +46,18 @@ function Signing() {
     setTabValue(newValue)
   }
 
-  function checkForAuthenticationButtons(name) {
-    // name should be 'login' or 'signup'
-    if (name === 'signup') {
-      let canProceed = (
-        [signupUsernameValidation, signupEmailValidation, signupPasswordValidation.error, signupPasswordConfirmValidation].some(item => Boolean(item) === true) ||
-        signupCheck === false ||
-        [signupUsername, signupPassword, signupEmail, signupPasswordConfirm].some(item => item.length === 0)
-      ) ? true : false
-      return canProceed
-    } else {
-      let canProceed = (
-        [loginUsernameValidation, loginPasswordValidation].some(item => Boolean(item) === true) ||
-        [loginPassword, loginUsername].some(item => item.length === 0)
-      ) ? true : false
-      return canProceed
-    }
-  }
+  let canProceedLogin = useMemo(() => (
+    (Boolean(loginUsernameValidation) || Boolean(loginPasswordValidation)) ? false : true
+  ), [loginUsernameValidation, loginPasswordValidation])
+
+  let canProceedSignup = useMemo(() => (
+    (Boolean(signupUsernameValidation) || Boolean(signupEmailValidation) || signupPasswordValidation.error || Boolean(signupPasswordConfirmValidation) || !signupCheck) ? false : true
+  ), [signupUsernameValidation, signupPasswordConfirmValidation, signupEmailValidation, signupPasswordValidation, signupCheck])
 
   function handleChange(event, value) {
     // this function take value as action.type
     // refer to ../../state/auth
-    dispatch({ type: value, value: event.target.value })
-  }
-
-  function changePwdType(_, value) {
-    // this function is for changing password input type
-    dispatch({ type: value })
+      dispatch({ type: value, value: event.target.value })
   }
 
   return (
@@ -108,7 +93,7 @@ function Signing() {
                 <Fragment>
                   <CustomInput
                     labelText="Username*"
-                    id="login-username"
+                    id="loginUsername"
                     formControlProps={{
                       fullWidth: true
                     }}
@@ -124,13 +109,13 @@ function Signing() {
                   ) : null}
                   <CustomInput
                     labelText="Password*"
-                    id="login-password"
+                    id="loginPassword"
                     formControlProps={{
                       fullWidth: true
                     }}
                     inputProps={{
                       endAdornment: (<InputAdornment position="end">
-                        <IconButton aria-label='login-password-visibility' onClick={() => changePwdType(event, 6)}>
+                        <IconButton aria-label='login-password-visibility' onClick={() => dispatch({ type: 6 })}>
                           {loginPasswordType === 'password' ? <VisibilityOff /> : <Visibility />}
                         </IconButton>
                       </InputAdornment>),
@@ -147,6 +132,7 @@ function Signing() {
                     className={classes.labelStyle}
                     control={
                       <Checkbox
+                        id="loginCheck"
                         value="remember-me"
                         color="primary"
                         onChange={() => dispatch({ type: 9 })}
@@ -155,24 +141,19 @@ function Signing() {
                     }
                     label="Remember me!"
                   />
-                  <Mutation mutation={TOKEN_AUTH}>
-                    {(tokenAuth, { data, loading, error }) => (
+                  <Mutation
+                    mutation={TOKEN_AUTH}
+                    variables={{ username: loginUsername, password: loginPassword }}
+                  >
+                    {(loginUser, { data, loading, error }) => (
                       <Fragment>
                         <Fab
                           variant="extended"
                           aria-label="login"
                           className={classes.btnStyle}
-                          onClick={() => {
-                            if (checkForAuthenticationButtons('login')) {
-                              console.error('something went wrong with login process')
-                            } else {
-                              tokenAuth({ variables: { username: loginUsername, password: loginPassword } })
-                            }
-                          }}
+                          onClick={loginUser}
                           // check fields value validation status to determine button state
-                          disabled={
-                            checkForAuthenticationButtons('login')
-                          }
+                          disabled={canProceedLogin ? false : true}
                         >
                           Let's GO
                         </Fab>
@@ -194,7 +175,7 @@ function Signing() {
                 <Fragment>
                   <CustomInput
                     labelText="Username*"
-                    id="signup-username"
+                    id="signupUsername"
                     formControlProps={{
                       fullWidth: true
                     }}
@@ -210,7 +191,7 @@ function Signing() {
                   ) : null}
                   <CustomInput
                     labelText="Email address*"
-                    id="signup-email"
+                    id="signupEmail"
                     formControlProps={{
                       fullWidth: true
                     }}
@@ -226,13 +207,13 @@ function Signing() {
                   ) : null}
                   <CustomInput
                     labelText="Password*"
-                    id="signup-password1"
+                    id="signupPassword"
                     formControlProps={{
                       fullWidth: true
                     }}
                     inputProps={{
                       endAdornment: (<InputAdornment position="end">
-                        <IconButton aria-label='signup-password-visibility' onClick={() => changePwdType(event, 7)}>
+                        <IconButton aria-label='signup-password-visibility' onClick={() => dispatch({ type: 7 })}>
                           {signupPasswordType === 'password' ? <VisibilityOff /> : <Visibility />}
                         </IconButton>
                       </InputAdornment>),
@@ -242,17 +223,16 @@ function Signing() {
                     }}
                     error={signupPasswordValidation.error}
                   />
-                  {/* check lib/authValidator */}
-                  <FormHelperText component='div'>{signupPasswordValidation.validationComponent}</FormHelperText>
+                  <FormHelperText component="div">{signupPasswordValidation.validationComponent}</FormHelperText>
                   <CustomInput
                     labelText="Confirm Password*"
-                    id="signup-password2"
+                    id="signupPasswordConfirm"
                     formControlProps={{
                       fullWidth: true
                     }}
                     inputProps={{
                       endAdornment: (<InputAdornment position="end">
-                        <IconButton aria-label='signup-password-visibility' onClick={() => changePwdType(event, 8)}>
+                        <IconButton aria-label='signup-password-visibility' onClick={() => dispatch({ type: 8 })}>
                           {signupPasswordConfirmType === 'password' ? <VisibilityOff /> : <Visibility />}
                         </IconButton>
                       </InputAdornment>),
@@ -269,6 +249,7 @@ function Signing() {
                     className={classes.labelStyle}
                     control={
                       <Checkbox
+                        id="signupCheck"
                         value="agree"
                         color="primary"
                         onChange={() => dispatch({ type: 10 })}
@@ -277,8 +258,8 @@ function Signing() {
                     }
                     label="i Agree with Terms and Policies"
                   />
-                  <Mutation mutation={SIGNUP_USER}
-                    // create new user mutation
+                  <Mutation
+                    mutation={SIGNUP_USER}
                     variables={{ email: signupEmail, username: signupUsername, password1: signupPassword, password2: signupPasswordConfirm }}
                     onCompleted={data => console.log(data)}
                     onError={error => console.log(error)}
@@ -287,16 +268,8 @@ function Signing() {
                       <Fab variant="extended"
                         aria-label="signup"
                         className={classes.btnStyle}
-                        onClick={() => {
-                          if (checkForAuthenticationButtons('signup')) {
-                            console.error('Something went wrong with signup process.')
-                          } else {
-                            signupUser()
-                          }
-                        }}
-                        disabled={// checking for errors and empty field
-                          checkForAuthenticationButtons('signup')
-                        }
+                        onClick={signupUser}
+                        disabled={canProceedSignup ? false : true}
                       >
                         Sign Me Up
                       </Fab>

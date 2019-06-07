@@ -11,7 +11,7 @@ class Query(
     shops.schema.Query,
     comment.schema.Query,
     image.schema.Query,
-    graphene.ObjectType
+    graphene.ObjectType,
 ):
     pass
 
