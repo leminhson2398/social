@@ -36,6 +36,10 @@ const navStyle = theme => ({
       fontSize: theme.typography.fontSize,
     },
   },
+  itemIcon: {
+    minWidth: 'auto',
+    marginRight: 16,
+  },
   textDense: {},
   divider: {
     marginTop: 16,

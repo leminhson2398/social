@@ -4,7 +4,7 @@ import Hidden from '@material-ui/core/Hidden'
 import Navigator from './Navigator'
 import PropTypes from 'prop-types'
 // style
-import { drawerWidth, mainStyle } from './mainContentStyle'
+import { drawerWidth, mainStyle } from './layoutStyle'
 
 
 function MainLayout(props) {
