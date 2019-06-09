@@ -17,7 +17,6 @@ from django.core.mail import send_mail, mail_admins, BadHeaderError
 def send_registration_email(uid, context):
     try:
         user = User.objects.get(id=uid)
-        print('seding')
     except User.DoesNotExist:
         raise Exception("Couldn't find user with id='{}'".format(uid))
     else:
