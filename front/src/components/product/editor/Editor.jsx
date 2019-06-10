@@ -1,4 +1,4 @@
-import React, { useState, useReducer, useMemo } from 'react'
+import React, { useState, useReducer, useMemo, Fragment } from 'react'
 import { makeStyles } from '@material-ui/styles'
 import Paper from '@material-ui/core/Paper'
 import Grid from '@material-ui/core/Grid'
@@ -21,6 +21,7 @@ import Gallery from '../../gallery/Gallery'
 import getDate from '../../../lib/getDate'
 import ColorPalette from './ColorPalette'
 import CategorySelector from './CategorySelector'
+import EmojiBox from '../../emoji/EmojiBox'
 // Quill Editor
 import Quill from 'quill'
 // import style:
@@ -59,11 +60,14 @@ function ProductEditor() {
     openFileGallery: false,
     openColorPalette: false,
     quillDependencies: null,
+    openEmojiBox: false,
+    emojiAnchor: null,
+    colorPaletteAnchor: null,
   })
 
   const {
     userUploadImages, openUserUploadFileField, openCategorySelector, openFileGallery, openColorPalette,
-    quillDependencies,
+    quillDependencies, openEmojiBox, emojiAnchor, colorPaletteAnchor,
   } = editorState
 
   // quillEditor will not change until quillDependencies changes
@@ -115,40 +119,39 @@ function ProductEditor() {
     })
   }
 
-  /**
-   * 
-   * @param {String} type - 'bold' || 'italic'
-   */
-  function formatSelection(type) {
-    type = type.toLowerCase()
-    // this function listen and is invoked when user click 'bold' or 'italic' button
+  function dispathSelection(formatType, callback = null) {
+    formatType = formatType.toLowerCase()
     let quillSelection = quillEditor.getSelection()
-    if (quillSelection && quillSelection.length > 0) {
+    // quillSelection now: {index: Int, length: Int} or null
+    if (quillSelection !== null) {
       quillStore.dispatch(quillSelection)
-
-      if (type === 'bold' || type === 'italic') {
-        let { index, length } = quillStore.getState()
-        // if type applied, change it conversely
-        let typeAppliedOrNot = quillEditor.getFormat(index, length)[type]
-        quillEditor.formatText(index, length, type, typeAppliedOrNot ? false : true)
+      // calls to callback, pass in formatType above
+      if (callback && callback instanceof Function) {
+        callback(formatType)
       }
     }
+  }
 
-    else if (type === 'list') {
-      quillEditor.setContents({ "ops": [{ "insert": "one" }, { "attributes": { "list": "bullet" }, "insert": "\n" }] })
+  console.log(editorState)
+
+  function formatQuillTextShape(type) {
+    // type have to be lowercase
+    let { index, length } = quillStore.getState()
+    let typeAppliedOrNot = quillEditor.getFormat(index, length)[type]
+    if (type === 'bold' || type === 'italic') {
+      quillEditor.formatText(index, length, type, typeAppliedOrNot ? false : true)
     }
   }
 
   function setSelectionColor(value) {
     let { index, length } = quillStore.getState()
+    // remove color style if user click the black color circle
     if (value === 'unset') {
-      // quillEditor.formatText(index, length, { color: false })
       quillEditor.formatText(index, length, 'color', false)
     } else {
       quillEditor.formatText(index, length, 'color', value)
     }
   }
-
 
   return (
     <Paper elevation={1} className={classes.editor}>
@@ -180,23 +183,31 @@ function ProductEditor() {
             {/* Quill Editor */}
             <Grid item ref={quillRef} />
             <Grid item style={{ textAlign: 'right' }}>
-              <ButtonIcon iconName='bold' btnType='fab30' tooltip='Bold' onClick={() => formatSelection('bold')} />
-              <ButtonIcon iconName='italic' btnType='fab30' tooltip='Italic' onClick={() => formatSelection('italic')} />
-              <ClickAwayListener onClickAway={() => {
-                if (openColorPalette) setState({ ...editorState, openColorPalette: false })
-              }}>
-                <span style={{ position: 'relative' }}>
-                  <ButtonIcon iconName='colortext' btnType='fab30' tooltip='Insert color' onClick={() => {
-                    setState({ ...editorState, openColorPalette: !openColorPalette })
-                    formatSelection('color')
-                  }} />
-                  {openColorPalette ? (
-                    <ColorPalette giveMeColor={colorValue => setSelectionColor(colorValue)} />
-                  ) : null}
-                </span>
-              </ClickAwayListener>
-              <ButtonIcon iconName='list' btnType='fab30' tooltip='Add List' onClick={() => console.log(quillEditor.getLine(1))} />
-              <ButtonIcon iconName='face' btnType='fab30' tooltip='Add emoji' />
+              <ButtonIcon iconName='bold' btnType='fab30' tooltip='Bold' onClick={() => dispathSelection('bold', formatQuillTextShape)} />
+              <ButtonIcon iconName='italic' btnType='fab30' tooltip='Italic' onClick={() => dispathSelection('italic', formatQuillTextShape)} />
+              <ButtonIcon iconName='colortext' btnType='fab30' tooltip='Insert color'
+                onClick={(event) => {
+                  setState({ ...editorState, openColorPalette: !openColorPalette, colorPaletteAnchor: event.currentTarget })
+                  dispathSelection('color')
+                }}
+                aria-describedby='color-palette'
+              />
+              <ColorPalette open={openColorPalette}
+                anchorEl={colorPaletteAnchor}
+                giveMeColor={colorValue => setSelectionColor(colorValue)}
+              />
+              <ButtonIcon iconName='list' btnType='fab30' tooltip='Add list' />
+              <ButtonIcon iconName='face' btnType='fab30' tooltip='Add emoji'
+                onClick={(event) => {
+                  setState({ ...editorState, openEmojiBox: !openEmojiBox, emojiAnchor: event.currentTarget })
+                  dispathSelection('emoji')
+                }}
+                aria-describedby='emoji-popup'
+              />
+              <EmojiBox
+                anchorEl={emojiAnchor}
+                open={openEmojiBox}
+              />
             </Grid>
           </Grid>
         </Paper>

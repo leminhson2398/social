@@ -7,7 +7,6 @@ import ProductEditor from './components/product/editor/Editor'
 // import SwipeableTextMobileStepper from './components/product/detail/SwipeViewer'
 import ProductDetail from './components/product/detail/ProductDetail'
 import 'quill/dist/quill.core.css'
-import EmojiBox from './components/emoji/EmojiBox'
 
 
 
@@ -15,14 +14,10 @@ export default class App extends React.Component {
   render() {
     return (
       <Fragment>
-        <ProductCard />
         <ProductEditor />
         {/* <Signing /> */}
-        <span>
-          &#x2660;
-        </span>
-        <EmojiBox />
         <ProductDetail />
+        <ProductCard />
       </Fragment>
     )
   }
