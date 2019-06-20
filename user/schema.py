@@ -22,7 +22,6 @@ class Query(graphene.AbstractType):
     user = graphene.List(UserType, search=graphene.String(required=False))
 
     def resolve_users(self, info):
-        # print(info.schema)
         return User.objects.all()
 
     def resolve_me(self, info):
@@ -78,7 +77,6 @@ class RefreshToken(graphene.Mutation):
     """
     Mutation to reauthenticate a user
     """
-
     class Arguments:
         token = graphene.String(required=True)
 
@@ -113,15 +111,22 @@ class CreateAppUser(graphene.Mutation):
 
     def mutate(self, info, **kwargs):
         # utilize UserCreationForm() to create new user
+        ok, user, error = None, None, None
         form = SignupForm(kwargs)
         if form.is_valid():
-            return CreateAppUser(ok=True, user=form.save(info))
+            ok = True
+            user = form.save(info)
         else:
-            # raise Exception(json.dumps(form.errors))
-            return CreateAppUser(ok=False, error=json.dumps(form.errors))
+            ok = False
+            error = json.dumps(form.errors)
+        
+        return CreateAppUser(
+            ok=ok,
+            error=error,
+            user=user,
+        )
 
 
 class Mutation(graphene.ObjectType):
     create_user = CreateAppUser.Field()
-    # create_avatar = CreateUserAvatar.Field()
     login = Login.Field()

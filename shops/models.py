@@ -42,17 +42,18 @@ class EmployeeShip(models.Model):
     """
     class between other users and one shop
     """
-    staff = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
-    shop  = models.ForeignKey('Shop', on_delete=models.CASCADE)
+    staff = models.ForeignKey(User, on_delete=models.CASCADE, null=True, related_name='employee_ships')
+    shop  = models.ForeignKey('Shop', on_delete=models.CASCADE, related_name='employee_ships')
     joined_since = models.DateTimeField(auto_now_add=True)
     working = models.BooleanField(default=True, verbose_name='Is he/she working for shop currently.')
     left_since = models.DateField(null=True, blank=True)
 
     class Meta:
         ordering = ['-joined_since']
+        db_table = 'employee_ship'
 
     def __str__(self):
-        return self.staff.id
+        return f"{self.staff.id} - {self.shop.id}"
 
 
 class Following(models.Model):

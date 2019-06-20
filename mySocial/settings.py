@@ -99,8 +99,8 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'social',
-        'PASSWORD': 'anhyeuem98',
-        'USER': 'leminhson',
+        'USER': 'root',
+        'PASSWORD': '',
         'PORT': '3306',
         'HOST': 'localhost',
         'OPTIONS': {
@@ -177,6 +177,8 @@ AUTHENTICATION_BACKENDS = [
 CORS_ORIGIN_WHITELIST = (
     'localhost:8000',
     'localhost:8080',
+    'localhost:3000',
+    '192.168.0.100:5000',
 )
 
 # for sending email

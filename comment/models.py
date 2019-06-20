@@ -34,6 +34,9 @@ class ProductComment(models.Model):
 
 
 class ProductReview(models.Model):
+	"""
+	only user who bought product can review product.
+	"""
 	id 		= models.UUIDField(primary_key=True, default=uuid4)
 	owner 	= models.ForeignKey(User, on_delete=models.DO_NOTHING, related_name='product_reviews')
 	product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='reviews')
@@ -60,7 +63,7 @@ def validate_stars(value):
 		)
 
 
-class ShopComment(models.Model):
+class ShopReview(models.Model):
 	"""
 	Users, who purchased product(s) from a shop can comment only,
 	to prevent shop inviting somany users are not their customers.
@@ -75,7 +78,7 @@ class ShopComment(models.Model):
 
 	class Meta:
 		ordering =  ['-created']
-		db_table = 'shop_comment'
+		db_table = 'shop_review'
 
 	def __str__(self):
 		return self.owner.username

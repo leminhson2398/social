@@ -133,6 +133,7 @@ class CreateCountry(graphene.Mutation):
         name = kwargs.get('name',  None)
 
         if name:
+            name = name.strip()
             filtered_names = ImportCountry.objects.filter(Q(name__iexact=name))
             # filter out if there are names already exist
             if filtered_names.count():
@@ -160,8 +161,7 @@ class UpdateShop(graphene.Mutation):
         name = graphene.String(required=False)
         email = graphene.String(required=False)
         phone = graphene.String(required=False)
-        categories = graphene.List(
-            graphene.NonNull(graphene.Int), required=True)
+        categories = graphene.List(graphene.NonNull(graphene.Int), required=True)
         slogan = graphene.String(required=False)
         # get list of category names in alphabetical format
 
@@ -172,8 +172,11 @@ class UpdateShop(graphene.Mutation):
         """
         user = info.context.user
         if user.is_anonymous:
-            raise Exception(
-                "You must be logged in to update your shop information.")
+            return UpdateShop(
+                ok=False,
+                shop=None,
+                errors="You have to log in to update your shop."
+            )
 
         category_list = kwargs.pop('categories')
         # try to fetch a shop from db based on owner argument
@@ -216,6 +219,7 @@ class CreateCategory(graphene.Mutation):
         name = kwargs.get('name', None)
 
         if name:
+            name = name.strip()
             category = Category.objects.get_or_create(name=name)
             # using this helps you never mind about database pk increment
             # as get_or_create() returns a tuple(Instance, Boolean)
@@ -258,11 +262,9 @@ class CreateProduct(graphene.Mutation):
     def mutate(self, info, **kwargs):
         user = info.context.user
         if user.is_anonymous:
-            raise Exception(
-                "You must be logged in to public your new product.")
+            raise Exception("You must be logged in to public your new product.")
 
-        source_list, image_list, category_list = [kwargs.pop(
-            key) for key in ['source', 'image_url', 'categories']]
+        source_list, image_list, category_list = [kwargs.pop(key) for key in ['source', 'image_url', 'categories']]
         new_product = user.shop.products.create(**kwargs)
         if len(source_list):
             source_list = ImportCountry.objects.filter(Q(id__in=source_list))
