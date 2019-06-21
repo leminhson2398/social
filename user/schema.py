@@ -22,6 +22,7 @@ class Query(graphene.AbstractType):
     user = graphene.List(UserType, search=graphene.String(required=False))
 
     def resolve_users(self, info):
+        print(info.context.META['REMOTE_ADDR'])
         return User.objects.all()
 
     def resolve_me(self, info):

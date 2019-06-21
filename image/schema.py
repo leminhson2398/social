@@ -23,3 +23,16 @@ class Query(graphene.ObjectType):
 
 	def resolve_product_images(self, info, **kwargs):
 		pass
+
+
+class UploadStringImage(graphene.Mutation):
+	ok 		= graphene.Boolean(required=True)
+	image 	= graphene.String(required=True)
+	error 	= graphene.String(required=False)
+
+	class Arguments:
+		imageString = graphene.String(required=True)
+		name = graphene
+
+	def mutate(self, info, **kwargs):
+

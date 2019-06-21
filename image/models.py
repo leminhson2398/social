@@ -2,7 +2,6 @@ from django.db import models
 from uuid import uuid4
 from django.contrib.auth.models import User
 from shops.models import Shop, Product
-from os.path import splitext
 
 
 class UserFile(models.Model):
@@ -22,10 +21,10 @@ class UserFile(models.Model):
 
 	def save(self, *args, **kwargs):
 		if not self.file_type:
-			ext_name = splitext(self.file.name)[1].lower()
-			if ext_name in ['.doc', '.docx', '.pdf', '.xlsx']:
+			ext_name = str(self.file.name).rsplit('.', 1)[1].lower()
+			if ext_name in ['doc', 'docx', 'pdf', 'xlsx']:
 				self.file_type = 'document'
-			elif ext_name in ['.png', '.jpeg', '.jpg', '.svg']:
+			elif ext_name in ['png', 'jpeg', 'jpg', 'svg']:
 				self.file_type = 'image'
 			else:
 				self.file_type = 'unknown'
@@ -50,10 +49,10 @@ class ShopFile(models.Model):
 
 	def save(self, *args, **kwargs):
 		if not self.file_type:
-			ext_name = splitext(self.file.name)[1].lower()
-			if ext_name in ['.doc', '.docx', '.pdf', '.xlsx']:
+			ext_name = str(self.file.name).rsplit('.', 1)[1].lower()
+			if ext_name in ['doc', 'docx', 'pdf', 'xlsx']:
 				self.file_type = 'document'
-			elif ext_name in ['.png', '.jpeg', '.jpg', '.svg']:
+			elif ext_name in ['png', 'jpeg', 'jpg', 'svg']:
 				self.file_type = 'image'
 			else:
 				self.file_type = 'unknown'
