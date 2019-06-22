@@ -25,14 +25,14 @@ class Query(graphene.ObjectType):
 		pass
 
 
-class UploadStringImage(graphene.Mutation):
-	ok 		= graphene.Boolean(required=True)
-	image 	= graphene.String(required=True)
-	error 	= graphene.String(required=False)
+# class UploadStringImage(graphene.Mutation):
+# 	ok 		= graphene.Boolean(required=True)
+# 	image 	= graphene.String(required=True)
+# 	error 	= graphene.String(required=False)
 
-	class Arguments:
-		imageString = graphene.String(required=True)
-		name = graphene
+# 	class Arguments:
+# 		imageString = graphene.String(required=True)
+# 		name = graphene
 
-	def mutate(self, info, **kwargs):
+# 	def mutate(self, info, **kwargs):
 

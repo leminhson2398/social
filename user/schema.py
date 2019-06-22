@@ -2,12 +2,11 @@ from django.contrib.auth.models import User
 import graphene
 from graphene_django import DjangoObjectType
 from user.forms import SignupForm
-from django.core.validators import ValidationError
 from user.models import AppUser
 import json
 from rest_framework_jwt.serializers import RefreshJSONWebTokenSerializer
-# import custom JSONWebTokenSerializer
 from user.utils import CustomJSONWebTokenSerializer
+from django.db.models import Q
 
 
 class UserType(DjangoObjectType):
@@ -22,7 +21,7 @@ class Query(graphene.AbstractType):
     user = graphene.List(UserType, search=graphene.String(required=False))
 
     def resolve_users(self, info):
-        print(info.context.META['REMOTE_ADDR'])
+        # print(info.context.META['REMOTE_ADDR'])
         return User.objects.all()
 
     def resolve_me(self, info):
@@ -51,27 +50,34 @@ class Login(graphene.Mutation):
         password = graphene.String(required=True)
 
     ok = graphene.Boolean(required=True)
-    errors = graphene.List(graphene.String)
-    token = graphene.String()
+    errors = graphene.String(required=False)
+    token = graphene.String(required=False)
     user = graphene.Field(UserType)
 
     def mutate(self, info, **kwargs):
-        serializer = CustomJSONWebTokenSerializer(data=kwargs)
-        if serializer.is_valid():
-            token = serializer.object['token']
-            user = serializer.object['user']
-            return Login(
-                ok=True,
-                user=user,
-                errors=None,
-                token=token,
-            )
+        ok, errors, token, user = False, None, None, None
+        # email, password = [kwargs.get(i, None) for i in ['email', 'password']]
+        if not all(list(kwargs.values())):
+            errors = "Please provide both your email and password."
         else:
-            return Login(
-                ok=False,
-                token=None,
-                errors=['email', 'Your credentials were invalid.']
-            )
+            serializer = CustomJSONWebTokenSerializer(data={
+                'email': kwargs.get('email').strip(),
+                'password': kwargs.get('password').strip(),
+            })
+            if serializer.is_valid():
+                token = serializer.object['token']
+                user = serializer.object['user']
+                ok = True
+            else:
+                print(dir(serializer.errors.values()))
+                errors='Your credentials were invalid.'
+
+        return Login(
+            ok=ok,
+            errors=errors,
+            token=token,
+            user=user,
+        )
 
 
 class RefreshToken(graphene.Mutation):
@@ -120,7 +126,7 @@ class CreateAppUser(graphene.Mutation):
         else:
             ok = False
             error = json.dumps(form.errors)
-        
+
         return CreateAppUser(
             ok=ok,
             error=error,
@@ -128,6 +134,37 @@ class CreateAppUser(graphene.Mutation):
         )
 
 
+class ResetPassword(graphene.Mutation):
+    ok = graphene.Boolean(required=True)
+    error = graphene.String(required=False)
+
+    class Arguments:
+        email = graphene.String(required=True)
+
+    def mutate(self, info, **kwargs):
+        ok, error = None, None, None
+
+        email = kwargs.get('email', '')
+        if email and isinstance(email, str):
+            try:
+                user = User.objects.get(Q(email=email))
+            except User.DoesNotExist:
+                ok = False
+                error = f"Oops! Found no email {email!r} in our system."
+            else:
+                ok = True
+                # send email
+        else:
+            ok = False
+            error = "Please enter a valid email address."
+
+        return ResetPassword(
+            ok=ok,
+            error=error
+        )
+
+
 class Mutation(graphene.ObjectType):
     create_user = CreateAppUser.Field()
     login = Login.Field()
+    reset_password = ResetPassword.Field()
