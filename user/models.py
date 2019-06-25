@@ -9,9 +9,9 @@ from uuid import uuid4
 
 
 def validate_phone_number(value):
-    if not str(AppUser.phone).isnumeric():
+    if not str(value).isnumeric():
         raise ValidationError(
-            gettext_lazy("%(value) is not a valida phone number."),
+            gettext_lazy("%(value) is not a valid phone number."),
             params={'value': AppUser.phone}
         )
 

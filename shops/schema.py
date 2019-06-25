@@ -122,89 +122,82 @@ class Query(graphene.ObjectType):
 
 
 class CreateCountry(graphene.Mutation):
-    ok = graphene.Boolean(required=True)
-    country = graphene.Field(ImportCountryType)
-    errors = graphene.String(required=False)
+    ok          = graphene.Boolean(required=True)
+    country     = graphene.Field(ImportCountryType)
+    errors      = graphene.String(required=False)
 
     class Arguments:
         name = graphene.String(required=True)
 
     def mutate(self, info, **kwargs):
-        name = kwargs.get('name',  None)
+        ok, country, errors = False, None, None
+        name = kwargs.get('name',  '')
 
         if name:
             name = name.strip()
             filtered_names = ImportCountry.objects.filter(Q(name__iexact=name))
             # filter out if there are names already exist
             if filtered_names.count():
-                return CreateCountry(
-                    ok=False,
-                    country=None,
-                    errors=f"Country with name {name!r} is already exists."
-                )
+                errors = f"Country with name {name!r} does already exist."
             else:
                 country = ImportCountry.objects.create(name=name)
-                return CreateCountry(
-                    ok=True,
-                    country=country,
-                )
+                ok = True
+                country = country
         else:
-            raise Exception('You must provide a name.')
+            errors = "You must provide a name."
+        
+        return CreateCountry(
+            ok=ok,
+            country=country,
+            errors=errors,
+        )
 
 
 class UpdateShop(graphene.Mutation):
-    ok = graphene.Boolean(required=True)
-    shop = graphene.Field(ShopType)
-    error = graphene.String(required=False)
+    ok      = graphene.Boolean(required=True)
+    shop    = graphene.Field(ShopType)
+    error   = graphene.String(required=False)
 
     class Arguments:
-        name = graphene.String(required=False)
-        email = graphene.String(required=False)
-        phone = graphene.String(required=False)
-        categories = graphene.List(graphene.NonNull(graphene.Int), required=True)
-        slogan = graphene.String(required=False)
+        name        = graphene.String(required=False)
+        email       = graphene.String(required=False)
+        phone       = graphene.String(required=False)
+        categories  = graphene.List(graphene.NonNull(graphene.Int), required=True)
+        slogan      = graphene.String(required=False)
         # get list of category names in alphabetical format
 
     def mutate(self, info, **kwargs):
+        ok, shop, error = False, None, None
         """
         Right when an user sign up, he(she) is automatically created a shop with a few default shop properties.
         So here, we just need to update his(her) shop instead of creating a new one (OneToOne model relationship).
         """
         user = info.context.user
         if user.is_anonymous:
-            return UpdateShop(
-                ok=False,
-                shop=None,
-                errors="You have to log in to update your shop."
-            )
-
-        category_list = kwargs.pop('categories')
-        # try to fetch a shop from db based on owner argument
-        # if exists, update with "defaults" argument
-        shop = Shop.objects.update_or_create(
-            owner=user,
-            defaults=kwargs
-        )[0]
-        # save this shop before adding any category
-        if len(category_list):
-            # get initial shop categories
-            shop_categories = shop.categories
-            category_list = Category.objects.filter(Q(id__in=category_list))
-            if category_list.count():
-                shop.categories.add(
-                    *[category for category in category_list.iterator() if category not in shop_categories]
-                )
-                return UpdateShop(
-                    ok=True,
-                    shop=shop
-                )
+            error = "You have to log in to update your shop."
         else:
-            # raise Exception("You must enter at least one category.")
-            return UpdateShop(
-                ok=False,
-                shop=shop,
-                errors=f"Your shop must has at least one category"
-            )
+            category_list = kwargs.pop('categories')
+            # try to fetch a shop from db based on owner argument
+            # if exists, update with "defaults" argument
+            shop = Shop.objects.update_or_create(
+                owner=user,
+                defaults=kwargs
+            )[0]
+            # save this shop before adding any category
+            if len(category_list):
+                # get initial shop categories
+                shop_categories = shop.categories
+                category_list = Category.objects.filter(Q(id__in=category_list))
+                if category_list.count():
+                    shop.categories.add(
+                        *[category for category in category_list.iterator() if category not in shop_categories]
+                    )
+                    ok = True
+                    shop = shop
+                else:
+                    error = "Please enter valid categories."
+            else:
+                error = "Please enter at least one category."
 
 
 class CreateCategory(graphene.Mutation):
@@ -216,74 +209,83 @@ class CreateCategory(graphene.Mutation):
         name = graphene.String(required=True)
 
     def mutate(self, info, **kwargs):
-        name = kwargs.get('name', None)
-
-        if name:
-            name = name.strip()
-            category = Category.objects.get_or_create(name=name)
-            # using this helps you never mind about database pk increment
-            # as get_or_create() returns a tuple(Instance, Boolean)
-            return CreateCategory(
-                ok=True,
-                category=category[0]
-            )
+        ok, category, error = False, None, None
+        user = info.context.user
+        if user.is_anonymous:
+            error = "You must login to add new category"
         else:
-            # raise Exception("You must enter a valid name")
-            return Category(
-                ok=False,
-                category=None,
-                errors="You must enter a category name."
-            )
+            name = kwargs.get('name', None)
+
+            if not name is None:
+                name = name.strip().lower()
+                category = Category.objects.get_or_create(name=name)
+                # using this helps you never mind about database pk increment
+                # as get_or_create() returns a tuple(Instance, Boolean)
+                ok = True
+                category = category[0]
+            else:
+                # raise Exception("You must enter a valid name")
+                error = "You must enter a category name."
+
+        return CreateCategory(
+            ok=ok,
+            category=category,
+            error=error,
+        )
 
 
 class CreateProduct(graphene.Mutation):
+    ok      = graphene.Boolean(required=True)
     product = graphene.Field(ProductType)
+    error   = graphene.String(required=False)
 
     class Arguments:
-        title = graphene.String(required=True)
-        description = graphene.String(required=True)
-        price = graphene.Float(required=True)
-        on_sale = graphene.Float(required=False, default_value=0.0)
-        total_products = graphene.Int(required=True)
-        categories = graphene.List(
-            graphene.NonNull(graphene.Int), required=True)
+        title           = graphene.String(required=True)
+        description     = graphene.String(required=True)
+        price           = graphene.Float(required=True)
+        on_sale         = graphene.Float(required=False, default_value=0.0)
+        total_products  = graphene.Int(required=True)
+        categories      = graphene.List(
+            graphene.NonNull(graphene.Int),
+            required=True
+        )
         source = graphene.List(
             graphene.Int,
             required=False,
             default_value=[],
             description='The country this product was imported.'
         )
-        image_url = graphene.List(
+        images = graphene.List(
             graphene.NonNull(graphene.String),
-            default_value=[],
             required=False
         )
 
     def mutate(self, info, **kwargs):
+        ok, product, error = False, None, None
+
         user = info.context.user
         if user.is_anonymous:
-            raise Exception("You must be logged in to public your new product.")
+            error = "You must login to add new product."
+        else:
+            source_list, image_list, category_list = [kwargs.pop(key) for key in ['source', 'images', 'categories']]
+            new_product = user.shop.products.create(**kwargs)
+            if len(source_list):
+                source_list = ImportCountry.objects.filter(Q(id__in=source_list))
+                if source_list.count():
+                    new_product.source.add(*source_list)
 
-        source_list, image_list, category_list = [kwargs.pop(key) for key in ['source', 'image_url', 'categories']]
-        new_product = user.shop.products.create(**kwargs)
-        if len(source_list):
-            source_list = ImportCountry.objects.filter(Q(id__in=source_list))
-            if source_list.count():
-                new_product.source.add(*source_list)
-            else:
-                pass
-        if len(category_list):
-            category_list = Category.objects.filter(Q(id__in=category_list))
-            if category_list.count():
-                new_product.categories.add(*category_list)
-            else:
-                raise Exception(
-                    "You must enter at least one category."
-                )
-        if len(image_list):
-            new_product.images.add(*image_list)
+            if len(category_list):
+                category_list = Category.objects.filter(Q(id__in=category_list))
+                if category_list.count():
+                    new_product.categories.add(*category_list)
+                else:
+                    raise Exception(
+                        "You must enter at least one category."
+                    )
+            if len(image_list):
+                new_product.images.add(*image_list)
 
-        return CreateProduct(product=new_product)
+            return CreateProduct(product=new_product)
 
 
 # class UpdateProduct(graphene.Mutation):

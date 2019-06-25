@@ -1,12 +1,13 @@
 from django.db import models
 from django.utils.text import slugify
-from django.contrib.auth import get_user_model
 import uuid
 from django.dispatch import receiver
 from django.db.models.signals import post_save
 # below is for elasticsearch
 from shops.search import ShopIndex
 from django.contrib.auth.models import User
+from image.models import ShopFile
+from django.core.validators import ValidationError
 
 
 class Category(models.Model):
@@ -68,7 +69,7 @@ class Following(models.Model):
 class Shop(models.Model):
     name        = models.CharField(max_length=50, blank=True, null=False, db_index=True, unique=True)
     slug        = models.SlugField(max_length=50, blank=True, null=False, db_index=True)
-    owner       = models.OneToOneField(get_user_model(), on_delete=models.CASCADE, related_name='shop')
+    owner       = models.OneToOneField(User, on_delete=models.CASCADE, related_name='shop')
     slogan      = models.CharField(max_length=100, null=True, blank=True)
     categories  = models.ManyToManyField(Category, related_name='shops', symmetrical=False)
     created     = models.DateTimeField(auto_now_add=True)
@@ -121,7 +122,7 @@ class Shop(models.Model):
         return obj.to_dict(include_meta=True)
 
 
-@receiver(post_save, sender=get_user_model())
+@receiver(post_save, sender=User)
 def create_shop(**kwargs):
     """Create a shop right after an user has signed up."""
     if kwargs.get('created', False):
@@ -154,6 +155,10 @@ class ImportCountry(models.Model):
         pass
 
 
+def validate_categories(value):
+    if len(value) > 3:
+        raise ValidationError("Can only select at most 3 categories.")
+
 class Product(models.Model):
     id              = models.UUIDField(primary_key=True, default=uuid.uuid4, db_index=True)
     title           = models.CharField(max_length=100, null=False, blank=False, db_index=True, unique=True)
@@ -161,7 +166,7 @@ class Product(models.Model):
     description     = models.TextField(null=False, blank=False)
     shop            = models.ForeignKey(Shop, on_delete=models.CASCADE, related_name='products')
     # verified      = models.BooleanField(default=False)
-    category        = models.ForeignKey(Category, related_name='products', on_delete=models.CASCADE)
+    categories      = models.ManyToManyField(Category, related_name='products', validators=[validate_categories])
     added           = models.DateTimeField(auto_now_add=True)
     updated         = models.DateTimeField(auto_now=True)
     price           = models.DecimalField(max_digits=10, decimal_places=2, db_index=True)
@@ -190,5 +195,7 @@ class Product(models.Model):
         self.title = self.title.strip().title()
         self.slug = slugify(self.title)
         self.available = True if self.total_products > 0 else False
+        if self.total_products < 0:
+            self.total_products = 0
         super().save(**kwargs)
         return self.title
