@@ -47,7 +47,7 @@ class ShopFile(models.Model):
 	id 			= models.UUIDField(primary_key=True, default=uuid4, db_index=True)
 	file 		= models.FileField(upload_to="shopFiles/%Y/%m/%d", blank=True, null=True, validators=[validate_file_type])
 	shop 		= models.ForeignKey(Shop, on_delete=models.CASCADE, related_name='files', db_index=True)
-	file_type 	= models.CharField(max_length=10, db_index=True)	
+	file_type 	= models.CharField(max_length=10, db_index=True)
 	upload 		= models.DateTimeField(auto_now_add=True)
 	product 	= models.ManyToManyField(Product, related_name='files')
 

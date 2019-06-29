@@ -142,7 +142,7 @@ class ResetPassword(graphene.Mutation):
         email = graphene.String(required=True)
 
     def mutate(self, info, **kwargs):
-        ok, error = None, None, None
+        ok, user, error = False, None, None
 
         email = kwargs.get('email', '')
         if email and isinstance(email, str):
@@ -160,7 +160,8 @@ class ResetPassword(graphene.Mutation):
 
         return ResetPassword(
             ok=ok,
-            error=error
+            error=error,
+            user=user,
         )
 
 

@@ -1,6 +1,7 @@
 import graphene
 from image.models import ShopFile, UserFile
 from graphene_django import DjangoObjectType
+from graphene_file_upload.scalars import Upload
 
 
 class UserFileType(DjangoObjectType):
@@ -25,14 +26,19 @@ class Query(graphene.ObjectType):
 		pass
 
 
-# class UploadStringImage(graphene.Mutation):
-# 	ok 		= graphene.Boolean(required=True)
-# 	image 	= graphene.String(required=True)
-# 	error 	= graphene.String(required=False)
+class ShopDocumentUpload(graphene.Mutation):
+	ok = graphene.Boolean(required=True)
 
-# 	class Arguments:
-# 		imageString = graphene.String(required=True)
-# 		name = graphene
+	class Arguments:
+		file = Upload(required=True)
 
-# 	def mutate(self, info, **kwargs):
+	def mutate(self, info, file, **kwargs):
+		print(info.context.FILES)
+		# print(file.value)
 
+		return ShopDocumentUpload(
+			ok=True,
+		)
+
+class Mutation(graphene.ObjectType):
+	upload_shop_document = ShopDocumentUpload.Field()

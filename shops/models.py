@@ -6,7 +6,6 @@ from django.db.models.signals import post_save
 # below is for elasticsearch
 from shops.search import ShopIndex
 from django.contrib.auth.models import User
-from image.models import ShopFile
 from django.core.validators import ValidationError
 
 
@@ -155,10 +154,6 @@ class ImportCountry(models.Model):
         pass
 
 
-def validate_categories(value):
-    if len(value) > 3:
-        raise ValidationError("Can only select at most 3 categories.")
-
 class Product(models.Model):
     id              = models.UUIDField(primary_key=True, default=uuid.uuid4, db_index=True)
     title           = models.CharField(max_length=100, null=False, blank=False, db_index=True, unique=True)
@@ -166,7 +161,7 @@ class Product(models.Model):
     description     = models.TextField(null=False, blank=False)
     shop            = models.ForeignKey(Shop, on_delete=models.CASCADE, related_name='products')
     # verified      = models.BooleanField(default=False)
-    categories      = models.ManyToManyField(Category, related_name='products', validators=[validate_categories])
+    categories      = models.ManyToManyField(Category, related_name='products')
     added           = models.DateTimeField(auto_now_add=True)
     updated         = models.DateTimeField(auto_now=True)
     price           = models.DecimalField(max_digits=10, decimal_places=2, db_index=True)
@@ -181,7 +176,7 @@ class Product(models.Model):
         ordering            = ['-added']
         db_table            = 'product'
         verbose_name_plural = 'Products'
-        index_together = ('slug', 'title', 'id')
+        index_together      = ('slug', 'title', 'id')
 
     def __str__(self):
         if len(str(self.title)) > 20:

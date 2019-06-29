@@ -2,7 +2,7 @@ import graphene
 from graphene_django import DjangoObjectType
 from shops.models import Category, Product, Shop, ImportCountry
 from user.schema import UserType
-from django.db.models import Q, F
+from django.db.models import Q, F, Subquery
 
 
 class ShopType(DjangoObjectType):
@@ -176,28 +176,32 @@ class UpdateShop(graphene.Mutation):
         if user.is_anonymous:
             error = "You have to log in to update your shop."
         else:
-            category_list = kwargs.pop('categories')
-            # try to fetch a shop from db based on owner argument
-            # if exists, update with "defaults" argument
-            shop = Shop.objects.update_or_create(
-                owner=user,
-                defaults=kwargs
+            category_list_enter_by_user = kwargs.pop('categories')
+            # try to fetch a shop from db based on 'owner_id'
+            # if exists, update with 'defaults' argument
+            # otherwise, create a new one using 'defaults'
+            # the result is a tuple: (object: Model, created: Boolean)
+            new_shop = Shop.objects.update_or_create(
+                owner_id=user.id,
+                defaults=kwargs,
             )[0]
             # save this shop before adding any category
-            if len(category_list):
-                # get initial shop categories
-                shop_categories = shop.categories
-                category_list = Category.objects.filter(Q(id__in=category_list))
-                if category_list.count():
-                    shop.categories.add(
-                        *[category for category in category_list.iterator() if category not in shop_categories]
+            if len(category_list_enter_by_user):
+                shop.categories.add(
+                    *Category.objects.filter(
+                        Q(id_in=category_list_enter_by_user)
                     )
-                    ok = True
-                    shop = shop
-                else:
-                    error = "Please enter valid categories."
+                )
+                ok = True
+                shop = new_shop
             else:
                 error = "Please enter at least one category."
+
+        return UpdateShop(
+            ok=ok,
+            shop=shop,
+            error=error,
+        )
 
 
 class CreateCategory(graphene.Mutation):
@@ -215,8 +219,7 @@ class CreateCategory(graphene.Mutation):
             error = "You must login to add new category"
         else:
             name = kwargs.get('name', None)
-
-            if not name is None:
+            if name:
                 name = name.strip().lower()
                 category = Category.objects.get_or_create(name=name)
                 # using this helps you never mind about database pk increment
@@ -249,13 +252,13 @@ class CreateProduct(graphene.Mutation):
             graphene.NonNull(graphene.Int),
             required=True
         )
-        source = graphene.List(
+        source          = graphene.List(
             graphene.Int,
             required=False,
             default_value=[],
             description='The country this product was imported.'
         )
-        images = graphene.List(
+        images          = graphene.List(
             graphene.NonNull(graphene.String),
             required=False
         )
