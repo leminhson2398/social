@@ -59,10 +59,10 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
-    'django.middleware.security.SecurityMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
+    'django.middleware.security.SecurityMiddleware',
+    'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
@@ -154,6 +154,8 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.1/howto/static-files/
 
 STATIC_URL = '/static/'
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 
 GRAPHENE = {
     'SCHEMA': 'mySocial.schema.schema',
@@ -174,12 +176,13 @@ AUTHENTICATION_BACKENDS = [
 #     }
 # }
 
-CORS_ORIGIN_WHITELIST = (
-    'localhost:8000',
-    'localhost:8080',
-    'localhost:3000',
-    '192.168.0.100:5000',
-)
+# CORS_ORIGIN_WHITELIST = (
+#     'localhost:8000',
+#     'localhost:8080',
+#     'localhost:3000',
+#     '192.168.0.100:5000',
+# )
+CORS_ORIGIN_ALLOW_ALL = True
 
 # for sending email
 DEFAULT_FROM_EMAIL = 'admin@test.com'

@@ -39,3 +39,10 @@ class GQLContext:
 class CustomGraphqlView(GraphQLView):
     def get_context(self, request):
         return GQLContext(request)
+
+
+def test_user_info(request):
+    if request.method == 'POST':
+        print(request.user)
+    else:
+        pass

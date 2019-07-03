@@ -268,7 +268,7 @@ class CreateProduct(graphene.Mutation):
 
         user = info.context.user
         if user.is_anonymous:
-            error = "You must login to add new product."
+            error = "You have to login to add new product."
         else:
             source_list, image_list, category_list = [kwargs.pop(key) for key in ['source', 'images', 'categories']]
             new_product = user.shop.products.create(**kwargs)
@@ -283,7 +283,7 @@ class CreateProduct(graphene.Mutation):
                     new_product.categories.add(*category_list)
                 else:
                     raise Exception(
-                        "You must enter at least one category."
+                        "You have to enter at least one category."
                     )
             if len(image_list):
                 new_product.images.add(*image_list)
