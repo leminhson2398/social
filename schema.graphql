@@ -104,8 +104,8 @@ type Query {
   productImages(search: String!): [ProductImageType]
   userImage: UserImageType
   userImages: [UserImageType]
-  shopImage: ShopImageType
-  shopImages: [ShopImageType]
+  ProductImage: ProductImageType
+  ProductImages: [ProductImageType]
   shopComments: [ShopCommentType]
   productComments: [ProductCommentType]
   productComment(search: String!): ProductCommentType
@@ -137,7 +137,7 @@ type ShopCommentType {
   updated: DateTime!
 }
 
-type ShopImageType {
+type ProductImageType {
   id: UUID!
   image: String
   shop: ShopType!
@@ -159,7 +159,7 @@ type ShopType {
   trending: Boolean!
   products: [ProductType]
   comments: [ShopCommentType]
-  images: [ShopImageType]
+  images: [ProductImageType]
 }
 
 scalar UUID
