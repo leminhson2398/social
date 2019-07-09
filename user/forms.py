@@ -19,7 +19,7 @@ class SignupForm(UserCreationForm):
         email = self.cleaned_data.get('email', None)
         if not email:
             raise ValidationError("You must provide an email")
-        if User.objects.filter(email__iexact=email).count():
+        if User.objects.get(email=email):
             raise ValidationError("Email is alredy taken")
         return email
 
@@ -30,10 +30,10 @@ class SignupForm(UserCreationForm):
         user = super(SignupForm, self).save(commit=False)
         user.is_active = True
         user.save()
-        context = {
-            'protocol': info.context.scheme,
-            'domain': info.context.META['HTTP_HOST'],
-        }
+        # context = {
+        #     'protocol': info.context.scheme,
+        #     'domain': info.context.META['HTTP_HOST'],
+        # }
         # send email using celery
-        tasks.send_registration_email.delay(user.id, context)
+        # tasks.send_registration_email.delay(user.id, context)
         return user

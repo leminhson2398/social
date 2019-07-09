@@ -7,6 +7,7 @@ from django.db.models.signals import post_save
 from shops.search import ShopIndex
 from django.contrib.auth.models import User
 from django.core.validators import ValidationError
+from image.models import ProductDocument, ProductImage
 
 
 class Category(models.Model):
@@ -157,6 +158,8 @@ class Product(models.Model):
     description     = models.TextField(null=False, blank=False)
     shop            = models.ForeignKey(Shop, on_delete=models.CASCADE, related_name='products')
     # verified      = models.BooleanField(default=False)
+    documents       = models.ManyToManyField(ProductDocument, related_name='products', blank=True)
+    images          = models.ManyToManyField(ProductImage, related_name='products', blank=True)
     categories      = models.ManyToManyField(Category, related_name='products')
     added           = models.DateTimeField(auto_now_add=True)
     updated         = models.DateTimeField(auto_now=True)

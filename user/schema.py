@@ -49,16 +49,15 @@ class Login(graphene.Mutation):
         email = graphene.String(required=True)
         password = graphene.String(required=True)
 
-    ok = graphene.Boolean(required=True)
-    errors = graphene.String(required=False)
-    token = graphene.String(required=False)
-    user = graphene.Field(UserType)
+    ok      = graphene.Boolean(required=True)
+    error   = graphene.String(required=False)
+    token   = graphene.String(required=False)
+    user    = graphene.Field(UserType)
 
     def mutate(self, info, **kwargs):
-        ok, errors, token, user = False, None, None, None
-        # email, password = [kwargs.get(i, None) for i in ['email', 'password']]
+        ok, error, token, user = False, None, None, None
         if not all(list(kwargs.values())):
-            errors = "Please provide both your email and password."
+            error = "Please provide both your email and password."
         else:
             serializer = CustomJSONWebTokenSerializer(data={
                 'email': kwargs.get('email').strip(),
@@ -69,12 +68,11 @@ class Login(graphene.Mutation):
                 user = serializer.object['user']
                 ok = True
             else:
-                print(dir(serializer.errors.values()))
-                errors='Your credentials were invalid.'
+                error='Your credentials were invalid.'
 
         return Login(
             ok=ok,
-            errors=errors,
+            error=error,
             token=token,
             user=user,
         )
@@ -109,6 +107,7 @@ class CreateAppUser(graphene.Mutation):
     ok = graphene.Boolean(required=True)
     user = graphene.Field(UserType, required=False)
     error = graphene.String(required=False)
+    message = graphene.String(required=False)
 
     class Arguments:
         username = graphene.String(required=True)
@@ -118,19 +117,22 @@ class CreateAppUser(graphene.Mutation):
 
     def mutate(self, info, **kwargs):
         # utilize UserCreationForm() to create new user
-        ok, user, error = None, None, None
+        ok, user, error, message = None, None, None, None
         form = SignupForm(kwargs)
         if form.is_valid():
-            ok = True
             user = form.save(info)
+            ok = True
+            message = "Successfully created your account, please check your inbox to proceed."
         else:
+            print(list(form.errors.values())[0])
             ok = False
-            error = json.dumps(form.errors)
+            error = ', '.join(list(form.errors.values())[0])
 
         return CreateAppUser(
             ok=ok,
             error=error,
             user=user,
+            message=message,
         )
 
 

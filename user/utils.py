@@ -10,7 +10,7 @@ jwt_payload_handler = api_settings.JWT_PAYLOAD_HANDLER
 jwt_encode_handler = api_settings.JWT_ENCODE_HANDLER
 jwt_decode_handler = api_settings.JWT_DECODE_HANDLER
 jwt_get_username_from_payload = api_settings.JWT_PAYLOAD_GET_USERNAME_HANDLER
-
+from rest_framework_jwt.serializers import JSONWebTokenSerializer
 
 class Reference(object):
     GENDERS = (
@@ -50,23 +50,14 @@ class CustomJSONWebTokenSerializer(Serializer):
                 'password': attrs.get('password'),
             }
 
-            if all(credentials.values()):
-                user = authenticate(**credentials)
+            user = authenticate(**credentials)
+            if user:
+                payload = jwt_payload_handler(user)
 
-                if user:
-                    if not user.is_active:
-                        msg = _('User account is disabled.')
-                        raise serializers.ValidationError(msg)
-
-                    payload = jwt_payload_handler(user)
-
-                    return {
-                        'token': jwt_encode_handler(payload),
-                        'user': user,
-                    }
-                else:
-                    msg = _('Unable to log in with provided credentials.')
-                    raise serializers.ValidationError(msg)
+                return {
+                    'token': jwt_encode_handler(payload),
+                    'user': user,
+                }
             else:
-                msg = _('You have to enter "email" and "password".')
+                msg = _('Unable to log in with provided credentials.')
                 raise serializers.ValidationError(msg)
