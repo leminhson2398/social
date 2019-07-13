@@ -1,94 +1,152 @@
 import graphene
 from image.models import ProductImage, UserDocument, UserImage, ProductDocument
 from graphene_django import DjangoObjectType
+from graphene_django.filter import DjangoFilterConnectionField
 from graphene import ObjectType
 from graphene_file_upload.scalars import Upload
 from image.utils import Reference as Ref
 from django.db.models import Q
-import json
 
 
 class UserDocumentType(DjangoObjectType):
 	class Meta:
 		model = UserDocument
+		filter_fields = {
+			'upload': ['gt', 'lt']
+		}
+		interfaces = (graphene.relay.Node, )
 
 
 class UserImageType(DjangoObjectType):
 	class Meta:
 		model = UserImage
+		filter_fields = {
+			'upload': ['gt', 'lt']
+		}
+		interfaces = (graphene.relay.Node, )
 
 
 class ProductDocumentType(DjangoObjectType):
 	class Meta:
 		model = ProductDocument
+		filter_fields = {
+			'upload': ['gt', 'lt']
+		}
+		interfaces = (graphene.relay.Node, )
 
 
 class ProductImageType(DjangoObjectType):
 	class Meta:
 		model = ProductImage
+		filter_fields = {
+			'upload': ['gt', 'lt']
+		}
+		interfaces = (graphene.relay.Node, )
 
 
-class CustomProductDocumentType(ObjectType):
-	ok = graphene.Boolean(required=True)
-	error = graphene.String(required=False)
-	product_documents = graphene.List(ProductDocumentType, required=False)
+class CustomFileType(ObjectType):
+	"""common class returns documents, images"""
+	ok 					= graphene.Boolean(required=True)
+	error 				= graphene.String(required=False)
+	product_documents 	= DjangoFilterConnectionField(ProductDocumentType)
+	product_images 		= DjangoFilterConnectionField(ProductImageType)
+	user_images			= DjangoFilterConnectionField(UserImageType)
+	user_documents		= DjangoFilterConnectionField(UserDocumentType)
 
 
 class Query(graphene.ObjectType):
 	user_image 			= graphene.Field(UserImageType)
-	user_images 		= graphene.List(UserImageType)
 	user_document 		= graphene.Field(UserDocumentType)
-	user_documents 		= graphene.List(UserDocumentType)
 	product_image 		= graphene.Field(ProductImageType)
-	product_images 		= graphene.List(ProductImageType)
-	product_documents 	= graphene.Field(
-		CustomProductDocumentType,
-		before=graphene.Date(required=False),
-		after=graphene.Date(required=False),
-	)
+
+	product_images 		= graphene.Field(CustomFileType)
+	user_images 		= graphene.Field(CustomFileType)
+	user_documents 		= graphene.Field(CustomFileType)
+	product_documents 	= graphene.Field(CustomFileType)
 
 	def resolve_user_image(self, info, **kwargs):
 		pass
 
-	def resolve_user_images(self, info, **kwargs):
-		return UserImage.objects.all()
-
 	def resolve_user_document(self, info, **kwargs):
 		pass
-
-	def resolve_user_documents(self, info, **kwargs):
-		return UserDocument.objects.all()
 
 	def resolve_product_image(self, info, **kwargs):
 		pass
 
-	def resolve_product_images(self, info, **kwargs):
-		return ProductImage.objects.all()
+	def resolve_product_document(self, info, **kwargs):
+		pass
 
-	def resolve_product_documents(self, info, **kwargs):
-		ok, error, query_set = False, None, None
+	def resolve_user_images(self, info, **kwargs):
+		ok, error, result = False, None, None
+		user = info.context.user
+		if user.is_anonymous:
+			error = "You have to log in to perform the operation."
+			result = UserImage.objects.none()
+		else:
+			ok = True
+			result = UserImage.objects.filter(user=user)
+
+		return CustomFileType(
+			ok=ok,
+			error=error,
+			user_images=result,
+			user_documents=[],
+			product_images=[],
+			product_documents=[],
+		)
+
+	def resolve_user_documents(self, info, **kwargs):
+		ok, error, result = False, None, None
+		user = info.context.user
+		if user.is_anonymous:
+			error = "You have to login to perform the operation."
+			result = UserDocument.objects.none()
+		else:
+			ok = True
+			result = UserDocument.objects.filter(user=user)
+
+		return CustomFileType(
+			ok=ok, error=error, user_documents=result,
+			user_images=[], product_documents=[], product_images=[]
+		)
+
+	def resolve_product_images(self, info, **kwargs):
+		ok, error, result = False, None, None
+		user = info.context.user
+		if user.is_anonymous:
+			error = "You have to login to perform the operation."
+			result = ProductImage.objects.none()
+		else:
+			ok = True
+			result = ProductImage.objects.filter(user=user)
+
+		return CustomFileType(
+			ok=ok,
+			error=error,
+			product_images=result,
+			product_documents=[],
+			user_images=[],
+			user_document=[],
+		)
+
+	def resolve_product_documents(self, info):
+		ok, error, result = False, None, None
 		user = info.context.user
 
 		if user.is_anonymous:
 			error = "You have to log in to perform the operation."
+			result = ProductDocument.objects.none()
 		else:
 			ok = True
-			before, after = [kwargs.get(key, None) for key in ['before', 'after']]
-			if before and after:
-				query_set = ProductDocument.objects.filter(
-					Q(upload__gt=after) & Q(upload__lt=before)
-				)
-			elif before or after:
-				query_set = ProductDocument.objects.filter(
-					Q(upload__gt=after) | Q(upload__lt=before)
-				)
-			else:
-				query_set = ProductDocument.objects.all()
+			result = ProductDocument.objects.filter(user=user)
 
-		return CustomProductDocumentType(
+		return CustomFileType(
 			ok=ok,
 			error=error,
-			product_documents=query_set,
+			product_documents=result,
+			user_images=[],
+			product_images=[],
+			user_documents=[],
 		)
 
 
@@ -189,7 +247,7 @@ class UserImageUpload(graphene.Mutation):
 			error = "You have to log in to upload image."
 		else:
 			images = kwargs.get('files', [])
-			if len(images) > 0 and Ref.validate_mime_type(Ref.IMG, images):
+			if len(images) > 0 and Ref.validate_mime_type(Ref.IMG, images) and Ref.validate_file_size(images):
 				ok = True
 				message = f"Successfully uploaded {len(images)} images."
 			else:
@@ -222,7 +280,7 @@ class ProductImageUpload(graphene.Mutation):
 			error = "Your shop is not activated yet. Please activate it first."
 		else:
 			images = kwargs.get('files', [])
-			if len(images) > 0 and Ref.validate_mime_type(Ref.IMG, images):
+			if len(images) > 0 and Ref.validate_mime_type(Ref.IMG, images) and Ref.validate_file_size(images):
 				ok = True
 				message = f"Successfully uploaded {len(images)} images to shop."
 			else:

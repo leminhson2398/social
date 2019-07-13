@@ -1,6 +1,6 @@
 from celery.decorators import task
 from django.conf import settings
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 from django.utils.http import urlsafe_base64_encode
 from django.utils.encoding import force_bytes
 from django.contrib.auth.tokens import default_token_generator
@@ -16,8 +16,8 @@ from django.core.mail import send_mail, mail_admins, BadHeaderError
 @task
 def send_registration_email(uid, context):
     try:
-        user = User.objects.get(id=uid)
-    except User.DoesNotExist:
+        user = get_user_model().objects.get(id=uid)
+    except get_user_model().DoesNotExist:
         raise Exception("Couldn't find user with id='{}'".format(uid))
     else:
         context.update({
@@ -46,8 +46,8 @@ def count():
 #         pass
 
 #     try:
-#         user = User.objects.get(id=user_id)
-#     except User.DoesNotExist:
+#         user = get_user_model().objects.get(id=user_id)
+#     except get_user_model().DoesNotExist:
 #         return
 #     else:
 #         pass

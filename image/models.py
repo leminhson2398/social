@@ -1,13 +1,13 @@
 from django.db import models
 from uuid import uuid4
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 from image.utils import Reference as Ref
 
 
 class UserDocument(models.Model):
 	id 			= models.UUIDField(primary_key=True, default=uuid4, db_index=True)
 	file    	= models.FileField(upload_to='UserDocuments/%Y/%m/%d')
-	user 		= models.ForeignKey(User, on_delete=models.CASCADE, related_name='documents', db_index=True)
+	user 		= models.ForeignKey(get_user_model(), on_delete=models.CASCADE, related_name='documents', db_index=True)
 	upload 		= models.DateTimeField(auto_now_add=True, db_index=True)
 
 	def __str__(self):
@@ -25,7 +25,7 @@ class UserDocument(models.Model):
 class ProductDocument(models.Model):
 	id 			= models.UUIDField(primary_key=True, default=uuid4, db_index=True)
 	file 		= models.FileField(upload_to="ProductDocuments/%Y/%m/%d")
-	user 		= models.ForeignKey(User, on_delete=models.CASCADE, related_name='product_documents')
+	user 		= models.ForeignKey(get_user_model(), on_delete=models.CASCADE, related_name='product_documents')
 	upload 		= models.DateTimeField(auto_now_add=True, db_index=True)
 
 	def __str__(self):
@@ -43,7 +43,7 @@ class ProductDocument(models.Model):
 class UserImage(models.Model):
 	id 		= models.UUIDField(primary_key=True, default=uuid4, db_index=True)
 	image 	= models.ImageField(upload_to="UserImages/%Y/%m/%d")
-	user 	= models.ForeignKey(User, on_delete=models.CASCADE, related_name='images', db_index=True)
+	user 	= models.ForeignKey(get_user_model(), on_delete=models.CASCADE, related_name='images', db_index=True)
 	upload 	= models.DateTimeField(auto_now_add=True, db_index=True)
 
 	def __str__(self):
@@ -58,7 +58,7 @@ class UserImage(models.Model):
 class ProductImage(models.Model):
 	id 		= models.UUIDField(primary_key=True, default=uuid4, db_index=True)
 	image 	= models.ImageField(upload_to="ProductImages/%Y/%m/%d")
-	user 	= models.ForeignKey(User, on_delete=models.CASCADE, related_name='product_images')
+	user 	= models.ForeignKey(get_user_model(), on_delete=models.CASCADE, related_name='product_images')
 	upload 	= models.DateTimeField(auto_now_add=True, db_index=True)
 
 	def __str__(self):

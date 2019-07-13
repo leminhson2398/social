@@ -5,7 +5,7 @@ from django.dispatch import receiver
 from django.db.models.signals import post_save
 # below is for elasticsearch
 from shops.search import ShopIndex
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 from django.core.validators import ValidationError
 from image.models import ProductDocument, ProductImage
 
@@ -40,7 +40,7 @@ class Category(models.Model):
 
 
 class EmployeeShip(models.Model):
-    staff           = models.ForeignKey(User, on_delete=models.CASCADE, null=True, related_name='employee_ships')
+    staff           = models.ForeignKey(get_user_model(), on_delete=models.CASCADE, null=True, related_name='employee_ships')
     shop            = models.ForeignKey('Shop', on_delete=models.CASCADE, related_name='employee_ships')
     joined_since    = models.DateTimeField(auto_now_add=True)
     left_since      = models.DateTimeField(auto_now=True)
@@ -58,14 +58,14 @@ class Following(models.Model):
     m2m people follow shops
     """
     shop    = models.ForeignKey('Shop', on_delete=models.CASCADE, related_name='following')
-    user    = models.ForeignKey(User, on_delete=models.CASCADE, related_name='following')
+    user    = models.ForeignKey(get_user_model(), on_delete=models.CASCADE, related_name='following')
     since   = models.DateTimeField(auto_now_add=True)
 
 
 class Shop(models.Model):
     name        = models.CharField(max_length=50, blank=True, null=False, db_index=True, unique=True)
     slug        = models.SlugField(max_length=50, blank=True, null=False, db_index=True)
-    owner       = models.OneToOneField(User, on_delete=models.CASCADE, related_name='shop')
+    owner       = models.OneToOneField(get_user_model(), on_delete=models.CASCADE, related_name='shop')
     slogan      = models.CharField(max_length=100, null=True, blank=True)
     categories  = models.ManyToManyField(Category, related_name='shops')
     created     = models.DateTimeField(auto_now_add=True)
@@ -75,8 +75,8 @@ class Shop(models.Model):
     views       = models.PositiveIntegerField(default=0)
     trending    = models.BooleanField(default=False)
     location    = models.CharField(max_length=200, null=True, blank=True, db_index=True)
-    employees   = models.ManyToManyField(User, through=EmployeeShip, related_name='employees', symmetrical=False)
-    followers   = models.ManyToManyField(User, through=Following, related_name='followers', symmetrical=False)
+    employees   = models.ManyToManyField(get_user_model(), through=EmployeeShip, related_name='employees', symmetrical=False)
+    followers   = models.ManyToManyField(get_user_model(), through=Following, related_name='followers', symmetrical=False)
     active      = models.BooleanField(default=False, db_index=True)
 
     class Meta:
@@ -118,7 +118,7 @@ class Shop(models.Model):
         return obj.to_dict(include_meta=True)
 
 
-@receiver(post_save, sender=User)
+@receiver(post_save, sender=get_user_model())
 def create_shop(**kwargs):
     """Create a shop right after an user has signed up."""
     if kwargs.get('created', False):

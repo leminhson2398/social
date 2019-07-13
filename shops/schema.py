@@ -162,7 +162,7 @@ class UpdateShop(graphene.Mutation):
         name        = graphene.String(required=False)
         email       = graphene.String(required=False)
         phone       = graphene.String(required=False)
-        categories  = graphene.List(graphene.NonNull(graphene.Int), required=True)
+        categories  = graphene.NonNull(graphene.List(graphene.Int, required=True))
         slogan      = graphene.String(required=False)
         # get list of category names in alphabetical format
 
@@ -248,9 +248,8 @@ class CreateProduct(graphene.Mutation):
         price           = graphene.Float(required=True)
         on_sale         = graphene.Float(required=False, default_value=0.0)
         total_products  = graphene.Int(required=True)
-        categories      = graphene.List(
-            graphene.NonNull(graphene.Int),
-            required=True
+        categories      = graphene.NonNull(
+            graphene.List(graphene.Int, required=True)
         )
         source          = graphene.List(
             graphene.Int,
@@ -258,9 +257,8 @@ class CreateProduct(graphene.Mutation):
             default_value=[],
             description='The country this product was imported.'
         )
-        images          = graphene.List(
-            graphene.NonNull(graphene.String),
-            required=False
+        images          = graphene.NonNull(
+            graphene.List(graphene.String, required=True),
         )
 
     def mutate(self, info, **kwargs):
@@ -270,7 +268,7 @@ class CreateProduct(graphene.Mutation):
         if user.is_anonymous:
             error = "You have to login to add new product."
         else:
-            source_list, image_list, category_list = [kwargs.pop(key) for key in ['source', 'images', 'categories']]
+            source_list, image_list, category_list = [kwargs.pop(key, []) for key in ['source', 'images', 'categories']]
             new_product = user.shop.products.create(**kwargs)
             if len(source_list):
                 source_list = ImportCountry.objects.filter(Q(id__in=source_list))

@@ -35,19 +35,18 @@ class Reference(object):
         uploaded files have valid extension
         """
         if file_type == Reference.DOC:
-            if all(getattr(doc, 'content_type') in Reference.ACCEPT_DOC_TYPES for doc in files):
+            if all([getattr(doc, 'content_type') in Reference.ACCEPT_DOC_TYPES for doc in files]):
                 return True
             return False
 
         elif file_type == Reference.IMG:
-            if all(getattr(img, 'content_type') in Reference.ACCEPT_IMG_TYPES for img in files):
+            if all([getattr(img, 'content_type') in Reference.ACCEPT_IMG_TYPES for img in files]):
                 return True
             return False
 
     @staticmethod
     def validate_document_type(file):
         ext_name = str(file.name).rsplit('.', 1)[1]
-        print(dir(file))
         if not ext_name in Reference.DOC_EXTS:
             raise ValidationError(
                 gettext_lazy("%(ext_name) is not an allowed file type."),
@@ -73,3 +72,17 @@ class Reference(object):
         else:
             # single file object
             return getattr(input_object, 'size') <= Reference.two_mb
+
+    @staticmethod
+    def convert_time_aware(time_value):
+        """
+        accepts datetime.datetime as argument, converts it to datetime.datetime object includes timezone info
+        """
+        from datetime import datetime, date
+        from pytz import UTC
+        from django.utils.timezone import make_aware
+        if time_value and isinstance(time_value, date):
+            time_value = time_value.isoformat()
+            return make_aware(value=datetime.strptime(time_value, "%Y-%m-%d"), timezone=UTC)
+        else:
+            return time_value

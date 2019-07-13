@@ -1,5 +1,5 @@
 from django.db import models
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 from shops.models import Product, Shop
 from uuid import uuid4
 from django.utils.translation import gettext_lazy
@@ -12,7 +12,7 @@ class ProductComment(models.Model):
 	every one can create a comment for a product
 	"""
 	id 		= models.UUIDField(primary_key=True, default=uuid4)
-	owner 	= models.ForeignKey(User, on_delete=models.CASCADE, related_name='product_comments')
+	owner 	= models.ForeignKey(get_user_model(), on_delete=models.CASCADE, related_name='product_comments')
 	product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='comments')
 	text 	= models.TextField(blank=True, null=True)
 	image 	= models.ImageField(upload_to='commentImages/%Y/%m/%d', null=True, blank=True)
@@ -38,7 +38,7 @@ class ProductReview(models.Model):
 	only user who bought product can review product.
 	"""
 	id 		= models.UUIDField(primary_key=True, default=uuid4)
-	owner 	= models.ForeignKey(User, on_delete=models.DO_NOTHING, related_name='product_reviews')
+	owner 	= models.ForeignKey(get_user_model(), on_delete=models.DO_NOTHING, related_name='product_reviews')
 	product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='reviews')
 	feeling = models.CharField(max_length=10, choices=Reference.user_feeling, default='normal')
 	review 	= models.TextField(null=True, blank=True)
@@ -70,7 +70,7 @@ class ShopReview(models.Model):
 	"""
 	id 		= models.UUIDField(primary_key=True, default=uuid4)
 	shop 	= models.ForeignKey(Shop, on_delete=models.CASCADE, related_name='comments')
-	owner 	= models.ForeignKey(User, on_delete=models.CASCADE, related_name='shop_comments')
+	owner 	= models.ForeignKey(get_user_model(), on_delete=models.CASCADE, related_name='shop_comments')
 	stars 	= models.PositiveSmallIntegerField(validators=[validate_stars])
 	text 	= models.TextField(blank=True, null=True)
 	created = models.DateTimeField(auto_now_add=True)
@@ -90,7 +90,7 @@ class ShopReview(models.Model):
 # class PostComment(models.Model):
 # 	id = models.UUIDField(primary_key=True, default=uuid4)
 # 	post = models.ForeignKey( on_delete=models.CASCADE, related_name='comments')
-# 	owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='post_comments')
+# 	owner = models.ForeignKey(get_user_model(), on_delete=models.CASCADE, related_name='post_comments')
 # 	text = models.TextField()
 # 	file = models.FileField(upload_to='postCommentFiles/%Y/%m/%d', blank=True, null=True)
 # 	created = models.DateTimeField(auto_now_add=True)

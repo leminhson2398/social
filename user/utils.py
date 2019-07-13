@@ -1,7 +1,7 @@
 from rest_framework_jwt.compat import Serializer, PasswordField
 from rest_framework import serializers
 from django.utils.translation import ugettext as _
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 from django.db.models import Q
 from django.contrib.auth import authenticate
 from rest_framework_jwt.settings import api_settings
@@ -40,8 +40,8 @@ class CustomJSONWebTokenSerializer(Serializer):
     def validate(self, attrs):
         email = attrs.get('email')
         try:
-            user = User.objects.get(Q(email=email))
-        except User.DoesNotExist:
+            user = get_user_model().objects.get(Q(email=email))
+        except get_user_model().DoesNotExist:
             msg = _('You entered wrong email address.')
             raise serializers.ValidationError(msg)
         else:

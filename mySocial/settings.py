@@ -183,6 +183,8 @@ AUTHENTICATION_BACKENDS = [
 #     'localhost:8080',
 #     'localhost:3000',
 #     '192.168.0.100:5000',
+#     '192.168.1.49:5000',
+#     '11352168.ngrok.io',
 # )
 CORS_ORIGIN_ALLOW_ALL = True
 

@@ -1,4 +1,4 @@
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 import graphene
 from graphene_django import DjangoObjectType
 from user.forms import SignupForm
@@ -11,7 +11,7 @@ from django.db.models import Q
 
 class UserType(DjangoObjectType):
     class Meta:
-        model = User
+        model = get_user_model()
         exclude_fields = ('password')
 
 
@@ -22,7 +22,7 @@ class Query(graphene.AbstractType):
 
     def resolve_users(self, info):
         # print(info.context.META['REMOTE_ADDR'])
-        return User.objects.all()
+        return get_user_model().objects.all()
 
     def resolve_me(self, info):
         user = info.context.user
@@ -34,10 +34,10 @@ class Query(graphene.AbstractType):
         search = kwargs.get('search', '')
         if search:
             try:
-                users = User.objects.filter(username__icontains=search)
-            except User.DoesNotExist:
+                users = get_user_model().objects.filter(username__icontains=search)
+            except get_user_model().DoesNotExist:
                 raise Exception(
-                    f"User with username='{search!r}' does not exist.")
+                    f"get_user_model() with username='{search!r}' does not exist.")
             else:
                 return users
         else:
@@ -149,8 +149,8 @@ class ResetPassword(graphene.Mutation):
         email = kwargs.get('email', '')
         if email and isinstance(email, str):
             try:
-                user = User.objects.get(Q(email=email))
-            except User.DoesNotExist:
+                user = get_user_model().objects.get(Q(email=email))
+            except get_user_model().DoesNotExist:
                 ok = False
                 error = f"Oops! Found no email {email!r} in our system."
             else:

@@ -1,5 +1,5 @@
 from django.db import models
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 from user.utils import Reference as Ref
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy
@@ -17,7 +17,7 @@ def validate_phone_number(value):
 
 
 class AppUser(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
+    user = models.OneToOneField(get_user_model(), on_delete=models.CASCADE, related_name='profile')
     display_name = models.CharField(max_length=50, db_index=True, blank=True, null=False)
     avatar = models.URLField(blank=True, null=True)
     date_of_birth = models.DateField(blank=True, null=True)
@@ -47,7 +47,7 @@ class AppUser(models.Model):
         verbose_name_plural = 'App Users'
 
 
-@receiver(post_save, sender=User)
+@receiver(post_save, sender=get_user_model())
 def create_app_user(sender, **kwargs):
     """Using signal to create an app user, right after an user have signed up."""
     if kwargs.get('created', False):
