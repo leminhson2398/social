@@ -89,10 +89,10 @@ class Query(graphene.ObjectType):
 		return CustomFileType(
 			ok=ok,
 			error=error,
-			user_images=result,
-			user_documents=[],
-			product_images=[],
 			product_documents=[],
+			user_images=result,
+			product_images=[],
+			user_documents=[],
 		)
 
 	def resolve_user_documents(self, info, **kwargs):
@@ -106,8 +106,12 @@ class Query(graphene.ObjectType):
 			result = UserDocument.objects.filter(user=user)
 
 		return CustomFileType(
-			ok=ok, error=error, user_documents=result,
-			user_images=[], product_documents=[], product_images=[]
+			ok=ok,
+			error=error,
+			product_documents=[],
+			user_images=[],
+			product_images=[],
+			user_documents=result,
 		)
 
 	def resolve_product_images(self, info, **kwargs):
@@ -123,10 +127,10 @@ class Query(graphene.ObjectType):
 		return CustomFileType(
 			ok=ok,
 			error=error,
-			product_images=result,
 			product_documents=[],
 			user_images=[],
-			user_document=[],
+			product_images=result,
+			user_documents=[],
 		)
 
 	def resolve_product_documents(self, info):

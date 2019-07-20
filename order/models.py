@@ -11,4 +11,10 @@ class Order(models.Model):
     updated         = models.DateTimeField(auto_now=True)
     canceled        = models.BooleanField(default=False)
     cancel_reason   = models.TextField(max_length=500, null=True)
-    
+
+    class Mete:
+        ordering = ['-created']
+
+    def __str__(self):
+        return self.id
+

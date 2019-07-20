@@ -40,7 +40,7 @@ class Category(models.Model):
 
 
 class EmployeeShip(models.Model):
-    staff           = models.ForeignKey(get_user_model(), on_delete=models.CASCADE, null=True, related_name='employee_ships')
+    staff           = models.ForeignKey(get_user_model(), on_delete=models.CASCADE, related_name='employee_ships')
     shop            = models.ForeignKey('Shop', on_delete=models.CASCADE, related_name='employee_ships')
     joined_since    = models.DateTimeField(auto_now_add=True)
     left_since      = models.DateTimeField(auto_now=True)
@@ -75,8 +75,8 @@ class Shop(models.Model):
     views       = models.PositiveIntegerField(default=0)
     trending    = models.BooleanField(default=False)
     location    = models.CharField(max_length=200, null=True, blank=True, db_index=True)
-    employees   = models.ManyToManyField(get_user_model(), through=EmployeeShip, related_name='employees', symmetrical=False)
-    followers   = models.ManyToManyField(get_user_model(), through=Following, related_name='followers', symmetrical=False)
+    employees   = models.ManyToManyField(get_user_model(), through=EmployeeShip, related_name='employees')
+    followers   = models.ManyToManyField(get_user_model(), through=Following, related_name='followers')
     active      = models.BooleanField(default=False, db_index=True)
 
     class Meta:

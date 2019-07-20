@@ -6,3 +6,4 @@ class Reference(object):
 		('dislike', 'Dislike'),
 		('disappointed', 'Disappointed'),
 	)
+	

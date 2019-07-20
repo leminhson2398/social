@@ -66,7 +66,7 @@ def validate_stars(value):
 class ShopReview(models.Model):
 	"""
 	Users, who purchased product(s) from a shop can comment only,
-	to prevent shop inviting somany users are not their customers.
+	to prevent shops from inviting somany users that are not their customers to like their page.
 	"""
 	id 		= models.UUIDField(primary_key=True, default=uuid4)
 	shop 	= models.ForeignKey(Shop, on_delete=models.CASCADE, related_name='comments')

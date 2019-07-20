@@ -124,7 +124,6 @@ class CreateAppUser(graphene.Mutation):
             ok = True
             message = "Successfully created your account, please check your inbox to proceed."
         else:
-            print(list(form.errors.values())[0])
             ok = False
             error = ', '.join(list(form.errors.values())[0])
 
@@ -168,6 +167,6 @@ class ResetPassword(graphene.Mutation):
 
 
 class Mutation(graphene.ObjectType):
-    create_user = CreateAppUser.Field()
-    login = Login.Field()
-    reset_password = ResetPassword.Field()
+    create_user     = CreateAppUser.Field()
+    login           = Login.Field()
+    reset_password  = ResetPassword.Field()

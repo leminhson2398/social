@@ -156,6 +156,9 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.1/howto/static-files/
 
 STATIC_URL = '/static/'
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, "static")
+]
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 
@@ -182,9 +185,7 @@ AUTHENTICATION_BACKENDS = [
 #     'localhost:8000',
 #     'localhost:8080',
 #     'localhost:3000',
-#     '192.168.0.100:5000',
-#     '192.168.1.49:5000',
-#     '11352168.ngrok.io',
+#     '192.168.1.50:5000',
 # )
 CORS_ORIGIN_ALLOW_ALL = True
 

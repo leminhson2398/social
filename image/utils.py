@@ -27,61 +27,61 @@ class Reference(object):
         'image/jpeg', 'image/png', 'image/gif'
     ]
 
-    @staticmethod
-    def validate_mime_type(file_type, files):
+    @classmethod
+    def validate_mime_type(cls, file_type, files):
         """
         file_type can be either DOC_TYPE or IMG_TYPE
         this function validate
         uploaded files have valid extension
         """
-        if file_type == Reference.DOC:
-            if all([getattr(doc, 'content_type') in Reference.ACCEPT_DOC_TYPES for doc in files]):
+        if file_type == cls.DOC:
+            if all([getattr(doc, 'content_type') in cls.ACCEPT_DOC_TYPES for doc in files]):
                 return True
             return False
 
-        elif file_type == Reference.IMG:
-            if all([getattr(img, 'content_type') in Reference.ACCEPT_IMG_TYPES for img in files]):
+        elif file_type == cls.IMG:
+            if all([getattr(img, 'content_type') in cls.ACCEPT_IMG_TYPES for img in files]):
                 return True
             return False
 
-    @staticmethod
-    def validate_document_type(file):
+    @classmethod
+    def validate_document_type(cls, file):
         ext_name = str(file.name).rsplit('.', 1)[1]
-        if not ext_name in Reference.DOC_EXTS:
+        if not ext_name in cls.DOC_EXTS:
             raise ValidationError(
                 gettext_lazy("%(ext_name) is not an allowed file type."),
                 params={'ext_name': ext_name}
             )
 
-    @staticmethod
-    def validate_image_type(file):
+    @classmethod
+    def validate_image_type(cls, file):
         ext_name = str(file.name).rsplit('.', 1)[1]
-        if not ext_name in Reference.IMG_EXTS:
+        if not ext_name in cls.IMG_EXTS:
             raise ValidationError(
                 gettext_lazy("%(ext_name) is not an allowed file type."),
                 params={'ext_name': ext_name}
             )
 
-    @staticmethod
-    def validate_file_size(input_object):
+    @classmethod
+    def validate_file_size(cls, input_object):
         """
         make sure the file(s) have got the size <= 2Mb
         """
         if isinstance(input_object, list):
-            return all([getattr(file, 'size') <= Reference.two_mb for file in input_object])
+            return all([getattr(file, 'size') <= cls.two_mb for file in input_object])
         else:
             # single file object
-            return getattr(input_object, 'size') <= Reference.two_mb
+            return getattr(input_object, 'size') <= cls.two_mb
 
     @staticmethod
     def convert_time_aware(time_value):
         """
-        accepts datetime.datetime as argument, converts it to datetime.datetime object includes timezone info
+        accepts datetime.date as argument, converts it to datetime.datetime object includes timezone info
         """
         from datetime import datetime, date
         from pytz import UTC
         from django.utils.timezone import make_aware
-        if time_value and isinstance(time_value, date):
+        if isinstance(time_value, date):
             time_value = time_value.isoformat()
             return make_aware(value=datetime.strptime(time_value, "%Y-%m-%d"), timezone=UTC)
         else:
