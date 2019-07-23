@@ -2,6 +2,8 @@ from django.db import models
 from uuid import uuid4
 from django.contrib.auth import get_user_model
 from image.utils import Reference as Ref
+from django.dispatch import receiver
+import os
 
 
 class UserDocument(models.Model):
@@ -38,6 +40,16 @@ class ProductDocument(models.Model):
 
 	def save(self, *args, **kwargs):
 		super(ProductDocument, self).save(*args, **kwargs)
+
+
+@receiver(models.signals.post_delete, sender=ProductDocument)
+def auto_delete_document(sender, instance, **kwargs):
+	"""
+	Deletes documents when an user delete performs delete requests
+	"""
+	if instance.file:
+		if os.path.isfile(instance.file.path):
+			os.remove(instance.file.path)
 
 
 class UserImage(models.Model):

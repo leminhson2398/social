@@ -6,6 +6,7 @@ from graphene import ObjectType
 from graphene_file_upload.scalars import Upload
 from image.utils import Reference as Ref
 from django.db.models import Q
+from graphql_relay import from_global_id
 
 
 class UserDocumentType(DjangoObjectType):
@@ -58,6 +59,7 @@ class Query(graphene.ObjectType):
 	user_image 			= graphene.Field(UserImageType)
 	user_document 		= graphene.Field(UserDocumentType)
 	product_image 		= graphene.Field(ProductImageType)
+	product_document 	= graphene.relay.Node.Field(ProductDocumentType)
 
 	product_images 		= graphene.Field(CustomFileType)
 	user_images 		= graphene.Field(CustomFileType)
@@ -158,6 +160,7 @@ class ProductDocumentUpload(graphene.Mutation):
 	ok 		= graphene.Boolean(required=True)
 	error 	= graphene.String(required=False)
 	message = graphene.String(required=False)
+	files 	= graphene.List(ProductDocumentType, required=True)
 
 	class Arguments:
 		files = graphene.NonNull(
@@ -165,7 +168,7 @@ class ProductDocumentUpload(graphene.Mutation):
 		)
 
 	def mutate(self, info, **kwargs):
-		ok, error, message = False, None, None
+		ok, error, message, files = False, None, None, []
 		user = info.context.user
 
 		if user.is_anonymous:
@@ -179,9 +182,10 @@ class ProductDocumentUpload(graphene.Mutation):
 				query = ProductDocument.objects.bulk_create(
 					[ProductDocument(file=f, user=user) for f in files]
 				)
-				if len(query) > 0:
+				if len(query):
 					ok = True
 					message = f"Successfully uploaded {len(query)} documents to your shop."
+					files = query
 				else:
 					ok = False
 					error = "Please try again later."
@@ -192,6 +196,50 @@ class ProductDocumentUpload(graphene.Mutation):
 			ok=ok,
 			error=error,
 			message=message,
+			files=files,
+		)
+
+
+class RemoveProductDocument(graphene.relay.ClientIDMutation):
+	ok 		= graphene.Boolean(required=True)
+	error 	= graphene.String(required=False)
+	message = graphene.String(required=False)
+	documents = graphene.List(ProductDocumentType, required=True)
+
+	class Input:
+		ids = graphene.NonNull(
+			graphene.List(graphene.ID, required=True)
+		)
+
+	def mutate_and_get_payload(self, info, **kwargs):
+		ok, error, message, documents = False, None, None, []
+		user = info.context.user
+
+		if user.is_anonymous:
+			error = "You have to log in to delete files."
+		else:
+			ids = kwargs.get('ids', [])
+			if len(ids):
+				query = user.product_documents.filter(
+					Q(id__in=[from_global_id(id)[1] for id in ids])
+				)
+				if query.count():
+					ok = True
+					message = f"Successfully deleted {query.count()} document(s)."
+					# documents.extend([doc for doc in query.iterator()])
+					documents.extend(query)
+					query.delete()
+				else:
+					ok = False
+					error = "Found no documents match your files."
+			else:
+				error = "You have to enter at least one file."
+
+		return RemoveProductDocument(
+			ok=ok,
+			message=message,
+			error=error,
+			documents=documents,
 		)
 
 
@@ -302,4 +350,8 @@ class Mutation(graphene.ObjectType):
 	upload_user_document 		= UserDocumentUpload.Field()
 	upload_product_image	 	= ProductImageUpload.Field()
 	upload_user_image    		= UserImageUpload.Field()
+	# remove_productDocument		= RemoveProductDocument.Field()
+
+class RelayMutation(graphene.AbstractType):
+	remove_product_document		= RemoveProductDocument.Field()
 

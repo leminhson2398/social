@@ -21,6 +21,8 @@ class Mutation(
     shops.schema.Mutation,
     comment.schema.Mutation,
     image.schema.Mutation,
+    # relay:
+    image.schema.RelayMutation,
     graphene.ObjectType,
 ):
     token_auth      = graphql_jwt.ObtainJSONWebToken.Field()
