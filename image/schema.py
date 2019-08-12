@@ -1,5 +1,5 @@
 import graphene
-from image.models import ProductImage, UserDocument, UserImage, ProductDocument
+from image.models import ProductImage, UserDocument, UserImage, ProductDocument, Todo
 from graphene_django import DjangoObjectType
 from graphene_django.filter import DjangoFilterConnectionField
 from graphene import ObjectType
@@ -7,6 +7,15 @@ from graphene_file_upload.scalars import Upload
 from image.utils import Reference as Ref
 from django.db.models import Q
 from graphql_relay import from_global_id
+
+
+class TodoType(DjangoObjectType):
+	class Meta:
+		model = Todo
+		filter_fields = {
+			'created': ['gt', 'lt'],
+		}
+		interfaces = (graphene.relay.Node, )
 
 
 class UserDocumentType(DjangoObjectType):
@@ -49,10 +58,10 @@ class CustomFileType(ObjectType):
 	"""common class returns documents, images"""
 	ok 					= graphene.Boolean(required=True)
 	error 				= graphene.String(required=False)
-	product_documents 	= DjangoFilterConnectionField(ProductDocumentType)
-	product_images 		= DjangoFilterConnectionField(ProductImageType)
-	user_images			= DjangoFilterConnectionField(UserImageType)
-	user_documents		= DjangoFilterConnectionField(UserDocumentType)
+	product_documents 	= DjangoFilterConnectionField(ProductDocumentType, default_value=[])
+	product_images 		= DjangoFilterConnectionField(ProductImageType, default_value=[])
+	user_images			= DjangoFilterConnectionField(UserImageType, default_value=[])
+	user_documents		= DjangoFilterConnectionField(UserDocumentType, default_value=[])
 
 
 class Query(graphene.ObjectType):
@@ -65,6 +74,12 @@ class Query(graphene.ObjectType):
 	user_images 		= graphene.Field(CustomFileType)
 	user_documents 		= graphene.Field(CustomFileType)
 	product_documents 	= graphene.Field(CustomFileType)
+
+	todos 				= DjangoFilterConnectionField(TodoType)
+	# todo 				= graphene.Field(TodoType)
+
+	# def resolve_todos(self, info, **kwargs):
+	# 	return Todo.objects.all()
 
 	def resolve_user_image(self, info, **kwargs):
 		pass
@@ -91,10 +106,7 @@ class Query(graphene.ObjectType):
 		return CustomFileType(
 			ok=ok,
 			error=error,
-			product_documents=[],
 			user_images=result,
-			product_images=[],
-			user_documents=[],
 		)
 
 	def resolve_user_documents(self, info, **kwargs):
@@ -105,14 +117,11 @@ class Query(graphene.ObjectType):
 			result = UserDocument.objects.none()
 		else:
 			ok = True
-			result = UserDocument.objects.filter(user=user)
+			result = UserDocument
 
 		return CustomFileType(
 			ok=ok,
 			error=error,
-			product_documents=[],
-			user_images=[],
-			product_images=[],
 			user_documents=result,
 		)
 
@@ -129,10 +138,7 @@ class Query(graphene.ObjectType):
 		return CustomFileType(
 			ok=ok,
 			error=error,
-			product_documents=[],
-			user_images=[],
 			product_images=result,
-			user_documents=[],
 		)
 
 	def resolve_product_documents(self, info):
@@ -150,17 +156,34 @@ class Query(graphene.ObjectType):
 			ok=ok,
 			error=error,
 			product_documents=result,
-			user_images=[],
-			product_images=[],
-			user_documents=[],
 		)
 
+
+class CreateTodo(graphene.Mutation):
+	ok = graphene.Boolean(required=False)
+	todo = graphene.Field(TodoType)
+	# todo = DjangoFilterConnectionField(TodoType)
+
+	class Arguments:
+		text = graphene.String(required=True)
+
+	def mutate(self, info, **kwargs):
+		ok, todo = False, None
+		text = kwargs.get('text', '')
+		if bool(text):
+			ok = True
+			todo = Todo.objects.create(text=text)
+
+		return CreateTodo(
+			ok=ok,
+			todo=todo,
+		)
 
 class ProductDocumentUpload(graphene.Mutation):
 	ok 		= graphene.Boolean(required=True)
 	error 	= graphene.String(required=False)
 	message = graphene.String(required=False)
-	files 	= graphene.List(ProductDocumentType, required=True)
+	files 	= DjangoFilterConnectionField(ProductDocumentType, default_value=[])
 
 	class Arguments:
 		files = graphene.NonNull(
@@ -178,13 +201,14 @@ class ProductDocumentUpload(graphene.Mutation):
 		else:
 			files = kwargs.get('files', [])
 			# checks length of files and validate mime type, file size
-			if len(files) > 0 and Ref.validate_mime_type(Ref.DOC, files) and Ref.validate_file_size(files):
+			if len(files) and Ref.validate_mime_type(Ref.DOC, files) and Ref.validate_file_size(files):
 				query = ProductDocument.objects.bulk_create(
 					[ProductDocument(file=f, user=user) for f in files]
 				)
-				if len(query):
+				query_length = len(query)
+				if query_length:
 					ok = True
-					message = f"Successfully uploaded {len(query)} documents to your shop."
+					message = f"Successfully uploaded {query_length} documents to your shop."
 					files = query
 				else:
 					ok = False
@@ -201,10 +225,10 @@ class ProductDocumentUpload(graphene.Mutation):
 
 
 class RemoveProductDocument(graphene.relay.ClientIDMutation):
-	ok 		= graphene.Boolean(required=True)
-	error 	= graphene.String(required=False)
-	message = graphene.String(required=False)
-	documents = graphene.List(ProductDocumentType, required=True)
+	ok 			= graphene.Boolean(required=True)
+	error 		= graphene.String(required=False)
+	message 	= graphene.String(required=False)
+	documents 	= graphene.List(ProductDocumentType, required=True)
 
 	class Input:
 		ids = graphene.NonNull(
@@ -224,13 +248,16 @@ class RemoveProductDocument(graphene.relay.ClientIDMutation):
 					Q(id__in=[from_global_id(id)[1] for id in ids])
 				)
 				if query.count():
-					ok = True
-					message = f"Successfully deleted {query.count()} document(s)."
-					# documents.extend([doc for doc in query.iterator()])
 					documents.extend(query)
-					query.delete()
+					delete_query = query.delete()
+					# delete_query: (total_number_of_object_deleted, {'field_name': number_of_object_belong_to_this_field_deleted, ...})
+					if delete_query[0]:
+						ok = True
+						message = f"Successfully deleted {delete_query[0]} document(s)."
+					else:
+						error = "Error deleting documents, please try again later."
+						documents.clear()
 				else:
-					ok = False
 					error = "Found no documents match your files."
 			else:
 				error = "You have to enter at least one file."
@@ -350,8 +377,8 @@ class Mutation(graphene.ObjectType):
 	upload_user_document 		= UserDocumentUpload.Field()
 	upload_product_image	 	= ProductImageUpload.Field()
 	upload_user_image    		= UserImageUpload.Field()
-	# remove_productDocument		= RemoveProductDocument.Field()
+	create_todo 				= CreateTodo.Field()
+
 
 class RelayMutation(graphene.AbstractType):
 	remove_product_document		= RemoveProductDocument.Field()
-

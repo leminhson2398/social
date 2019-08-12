@@ -49,7 +49,10 @@ def auto_delete_document(sender, instance, **kwargs):
 	"""
 	if instance.file:
 		if os.path.isfile(instance.file.path):
-			os.remove(instance.file.path)
+			try:
+				os.remove(instance.file.path)
+			except Exception:
+				pass
 
 
 class UserImage(models.Model):
@@ -80,3 +83,16 @@ class ProductImage(models.Model):
 		ordering 		= ['-upload']
 		db_table 		= 'product_image'
 		index_together 	= ['id', 'upload']
+
+
+class Todo(models.Model):
+	text = models.CharField(max_length=100, null=False, blank=False)
+	created = models.DateTimeField(auto_now_add=True)
+	completed = models.BooleanField(default=False)
+
+	def __str__(self):
+	 	return str(self.id)
+
+	class Meta:
+		ordering = ['-created']
+		db_table = 'todo'
