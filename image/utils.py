@@ -11,8 +11,7 @@ class Reference(object):
     DOC = 'document'
     IMG = 'image'
     UKN_TYPE = 'unknown'
-    FILE_EXTS = ['doc', 'docx', 'pdf', 'xlsx',
-                 'epub', 'xls', 'png', 'jpeg', 'jpg', 'svg']
+    FILE_EXTS = ['doc', 'docx', 'pdf', 'xlsx', 'epub', 'xls', 'png', 'jpeg', 'jpg', 'svg']
     DOC_EXTS = ['doc', 'docx', 'pdf', 'xlsx', 'epub', 'xls']
     IMG_EXTS = ['png', 'jpeg', 'jpg', 'gif']
     ACCEPT_DOC_TYPES = [
@@ -46,7 +45,7 @@ class Reference(object):
 
     @classmethod
     def validate_document_type(cls, file):
-        ext_name = str(file.name).rsplit('.', 1)[1]
+        ext_name = file.name.split('.')[-1]
         if not ext_name in cls.DOC_EXTS:
             raise ValidationError(
                 gettext_lazy("%(ext_name) is not an allowed file type."),
@@ -55,7 +54,7 @@ class Reference(object):
 
     @classmethod
     def validate_image_type(cls, file):
-        ext_name = str(file.name).rsplit('.', 1)[1]
+        ext_name = file.name.split('.')[-1]
         if not ext_name in cls.IMG_EXTS:
             raise ValidationError(
                 gettext_lazy("%(ext_name) is not an allowed file type."),
@@ -63,15 +62,15 @@ class Reference(object):
             )
 
     @classmethod
-    def validate_file_size(cls, input_object):
+    def validate_file_size(cls, inputObject):
         """
         make sure the file(s) have got the size <= 2Mb
         """
-        if isinstance(input_object, list):
-            return all([getattr(file, 'size') <= cls.two_mb for file in input_object])
+        if isinstance(inputObject, list):
+            return all([getattr(file, 'size') <= cls.two_mb for file in inputObject])
         else:
             # single file object
-            return getattr(input_object, 'size') <= cls.two_mb
+            return getattr(inputObject, 'size') <= cls.two_mb
 
     @staticmethod
     def convert_time_aware(time_value):

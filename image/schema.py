@@ -1,5 +1,5 @@
 import graphene
-from image.models import ProductImage, UserDocument, UserImage, ProductDocument, Todo
+from image.models import ProductImage, UserDocument, UserImage, ProductDocument
 from graphene_django import DjangoObjectType
 from graphene_django.filter import DjangoFilterConnectionField
 from graphene import ObjectType
@@ -7,15 +7,6 @@ from graphene_file_upload.scalars import Upload
 from image.utils import Reference as Ref
 from django.db.models import Q
 from graphql_relay import from_global_id
-
-
-class TodoType(DjangoObjectType):
-	class Meta:
-		model = Todo
-		filter_fields = {
-			'created': ['gt', 'lt'],
-		}
-		interfaces = (graphene.relay.Node, )
 
 
 class UserDocumentType(DjangoObjectType):
@@ -42,6 +33,7 @@ class ProductDocumentType(DjangoObjectType):
 		filter_fields = {
 			'upload': ['gt', 'lt']
 		}
+		# filter_fields = ['upload']
 		interfaces = (graphene.relay.Node, )
 
 
@@ -73,13 +65,13 @@ class Query(graphene.ObjectType):
 	product_images 		= graphene.Field(CustomFileType)
 	user_images 		= graphene.Field(CustomFileType)
 	user_documents 		= graphene.Field(CustomFileType)
-	product_documents 	= graphene.Field(CustomFileType)
+	# product_documents 	= graphene.Field(
+	# 	CustomFileType,
+	# 	upload__Gt=graphene.DateTime(required=False),
+	# 	upload__Lt=graphene.DateTime(required=False)
+	# )
+	product_documents 	= DjangoFilterConnectionField(ProductDocumentType)
 
-	todos 				= DjangoFilterConnectionField(TodoType)
-	# todo 				= graphene.Field(TodoType)
-
-	# def resolve_todos(self, info, **kwargs):
-	# 	return Todo.objects.all()
 
 	def resolve_user_image(self, info, **kwargs):
 		pass
@@ -141,43 +133,29 @@ class Query(graphene.ObjectType):
 			product_images=result,
 		)
 
+	# def resolve_product_documents(self, info):
+	# 	ok, error, result = False, None, None
+	# 	user = info.context.user
+
+	# 	if user.is_anonymous:
+	# 		error = "You have to log in to perform the operation."
+	# 		result = ProductDocument.objects.none()
+	# 	else:
+	# 		ok = True
+	# 		result = ProductDocument.objects.filter(user=user)
+
+	# 	return CustomFileType(
+	# 		ok=ok,
+	# 		error=error,
+	# 		product_documents=result,
+	# 	)
 	def resolve_product_documents(self, info):
-		ok, error, result = False, None, None
 		user = info.context.user
-
 		if user.is_anonymous:
-			error = "You have to log in to perform the operation."
-			result = ProductDocument.objects.none()
+			return ProductDocument.objetcs.none()
 		else:
-			ok = True
-			result = ProductDocument.objects.filter(user=user)
+			return ProductDocument.objects.filter(user=user)
 
-		return CustomFileType(
-			ok=ok,
-			error=error,
-			product_documents=result,
-		)
-
-
-class CreateTodo(graphene.Mutation):
-	ok = graphene.Boolean(required=False)
-	todo = graphene.Field(TodoType)
-	# todo = DjangoFilterConnectionField(TodoType)
-
-	class Arguments:
-		text = graphene.String(required=True)
-
-	def mutate(self, info, **kwargs):
-		ok, todo = False, None
-		text = kwargs.get('text', '')
-		if bool(text):
-			ok = True
-			todo = Todo.objects.create(text=text)
-
-		return CreateTodo(
-			ok=ok,
-			todo=todo,
-		)
 
 class ProductDocumentUpload(graphene.Mutation):
 	ok 		= graphene.Boolean(required=True)
@@ -199,11 +177,11 @@ class ProductDocumentUpload(graphene.Mutation):
 		elif user and not user.shop.active:
 			error = "Your shop is not activated yet, please activate it first."
 		else:
-			files = kwargs.get('files', [])
+			inputFiles = kwargs.get('files', [])
 			# checks length of files and validate mime type, file size
-			if len(files) and Ref.validate_mime_type(Ref.DOC, files) and Ref.validate_file_size(files):
+			if len(inputFiles) and Ref.validate_mime_type(Ref.DOC, inputFiles) and Ref.validate_file_size(inputFiles):
 				query = ProductDocument.objects.bulk_create(
-					[ProductDocument(file=f, user=user) for f in files]
+					[ProductDocument(file=f, user=user) for f in inputFiles]
 				)
 				query_length = len(query)
 				if query_length:
@@ -214,7 +192,7 @@ class ProductDocumentUpload(graphene.Mutation):
 					ok = False
 					error = "Please try again later."
 			else:
-				error = "Please choose files have valid extension."
+				error = f"Please choose files have extension of {Ref.DOC_EXTS} and file size less than 2MB."
 
 		return ProductDocumentUpload(
 			ok=ok,
@@ -260,7 +238,7 @@ class RemoveProductDocument(graphene.relay.ClientIDMutation):
 				else:
 					error = "Found no documents match your files."
 			else:
-				error = "You have to enter at least one file."
+				error = "You need to check at least one(1) file."
 
 		return RemoveProductDocument(
 			ok=ok,
@@ -377,7 +355,6 @@ class Mutation(graphene.ObjectType):
 	upload_user_document 		= UserDocumentUpload.Field()
 	upload_product_image	 	= ProductImageUpload.Field()
 	upload_user_image    		= UserImageUpload.Field()
-	create_todo 				= CreateTodo.Field()
 
 
 class RelayMutation(graphene.AbstractType):
